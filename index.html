@@ -1,0 +1,1588 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>우리 동네 발명 지도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky top bar · step rail on the left (desktop) or progress chips on top (tablet/phone) · one working column with a sticky bottom nav.
+   Look: a clean field notebook for young inventors — navy ink, teal accent, a drawn village map, and a white "paper" report sheet. */
+:root{
+  --bg:#f2f5f6; --surface:#ffffff; --surface-2:#e8eff1; --ink:#14233b; --ink-2:#4a5a6e; --line:#d0dae0;
+  --navy:#1d3a6e; --teal:#0a7470; --teal-soft:#d9efec; --amber:#8f5300; --amber-soft:#fcefd4;
+  --good:#256f35; --good-soft:#e0f1e2; --bad:#a8362b; --bad-soft:#f8e2df;
+  --btn-bg:#1d3a6e; --btn-fg:#ffffff; --focus:#d98200; --spot-hover:rgba(29,58,110,.08);
+  --m-grass:#dcecd2; --m-grass2:#cbe2bd; --m-road:#c6cfd6; --m-lane:#ffffff; --m-bldg:#ffffff; --m-roof:#5579b3; --m-roof2:#cf7454;
+  --m-win:#b8d3e8; --m-water:#b7dbec; --m-tree:#7cb066; --m-trunk:#86664a; --m-field:#e6c79c; --m-fieldline:#ffffff;
+  --m-awn1:#dc6455; --m-awn2:#efbd47; --m-bin1:#3b78c4; --m-bin2:#3f9a53; --m-bin3:#dc9b33; --m-hl:#d98200; --m-edge:#8796a4;
+  --paper:#ffffff; --paper-ink:#18222f; --paper-muted:#5a6878; --paper-line:#cfd7de; --paper-tint:#eef4f6; --paper-accent:#0a7470;
+  --f-display:"Do Hyeon","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-body:"Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e161f; --surface:#16212c; --surface-2:#1c2a37; --ink:#e6edf4; --ink-2:#a3b2c2; --line:#2d3c4c;
+    --navy:#a9c2f0; --teal:#5cc8c0; --teal-soft:#143633; --amber:#f2b860; --amber-soft:#3a2b13;
+    --good:#7fd08e; --good-soft:#163222; --bad:#f19a8f; --bad-soft:#3a1d1a;
+    --btn-bg:#a9c2f0; --btn-fg:#0e161f; --focus:#f2b860; --spot-hover:rgba(169,194,240,.10);
+    --m-grass:#1c2c22; --m-grass2:#22372a; --m-road:#34424f; --m-lane:#62717e; --m-bldg:#2c3a48; --m-roof:#4f6fa6; --m-roof2:#a45c44;
+    --m-win:#3f5a72; --m-water:#1f4052; --m-tree:#3f7341; --m-trunk:#6a5038; --m-field:#5e4a33; --m-fieldline:#8b7558;
+    --m-awn1:#a8493f; --m-awn2:#b38c33; --m-bin1:#2f5f9c; --m-bin2:#32753f; --m-bin3:#a87628; --m-hl:#f2b860; --m-edge:#7d8c9a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e161f; --surface:#16212c; --surface-2:#1c2a37; --ink:#e6edf4; --ink-2:#a3b2c2; --line:#2d3c4c;
+  --navy:#a9c2f0; --teal:#5cc8c0; --teal-soft:#143633; --amber:#f2b860; --amber-soft:#3a2b13;
+  --good:#7fd08e; --good-soft:#163222; --bad:#f19a8f; --bad-soft:#3a1d1a;
+  --btn-bg:#a9c2f0; --btn-fg:#0e161f; --focus:#f2b860; --spot-hover:rgba(169,194,240,.10);
+  --m-grass:#1c2c22; --m-grass2:#22372a; --m-road:#34424f; --m-lane:#62717e; --m-bldg:#2c3a48; --m-roof:#4f6fa6; --m-roof2:#a45c44;
+  --m-win:#3f5a72; --m-water:#1f4052; --m-tree:#3f7341; --m-trunk:#6a5038; --m-field:#5e4a33; --m-fieldline:#8b7558;
+  --m-awn1:#a8493f; --m-awn2:#b38c33; --m-bin1:#2f5f9c; --m-bin2:#32753f; --m-bin3:#a87628; --m-hl:#f2b860; --m-edge:#7d8c9a;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1,h2{font-family:var(--f-display);font-weight:400;letter-spacing:.01em}
+p{margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fine{font-size:.86rem;color:var(--ink-2)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- buttons & form controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;min-height:44px;padding:.5em 1.05em;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:500;cursor:pointer;text-align:center;line-height:1.3;text-decoration:none}
+.btn:hover{border-color:var(--navy)}
+.btn.primary{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-fg);font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{min-height:38px;padding:.3em .8em;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.link{background:none;border:0;padding:.2em .1em;color:var(--teal);font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:32px}
+label,.label{display:block;font-weight:700;margin-bottom:.35rem}
+.hint{display:block;font-weight:400;font-size:.86rem;color:var(--ink-2)}
+.req{display:inline-block;font-size:.72rem;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:.05em .5em;border-radius:99px;margin-left:.4em;vertical-align:.1em}
+input[type=text],textarea,select{width:100%;min-height:44px;padding:.6em .75em;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+textarea{resize:vertical;line-height:1.55}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-soft)}
+input::placeholder,textarea::placeholder{color:var(--ink-2);opacity:.75}
+.field{display:grid;gap:.1rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{min-height:44px;padding:.4em .95em;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:.35em}
+.chip[aria-pressed="true"]{background:var(--teal-soft);border-color:var(--teal);color:var(--ink)}
+.chip[aria-pressed="true"]::before{content:"✓";font-weight:700;color:var(--teal)}
+.chip .x{font-weight:700;color:var(--ink-2);margin-left:.15em}
+.seg{display:inline-flex;flex-wrap:wrap;gap:.35rem}
+.seg button{min-height:40px;padding:.3em .8em;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:.92rem;display:inline-flex;align-items:center;gap:.3em}
+.seg button[aria-pressed="true"]{font-weight:700}
+.seg button[data-v="good"][aria-pressed="true"]{background:var(--good-soft);border-color:var(--good)}
+.seg button[data-v="okay"][aria-pressed="true"],.seg button[data-v="improve"][aria-pressed="true"]{background:var(--amber-soft);border-color:var(--amber)}
+.seg button[data-v="retry"][aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg .mk{font-weight:700;width:1.1em;text-align:center}
+.add-row{display:flex;gap:.5rem}
+.add-row input{flex:1;min-width:0}
+.list{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.45rem}
+.list li{display:flex;gap:.5rem;align-items:center}
+.list li input{flex:1;min-width:0}
+.list .num{flex:none;width:1.9em;height:1.9em;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.icon-btn{flex:none;width:44px;height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;color:var(--ink-2)}
+.icon-btn:hover{color:var(--bad);border-color:var(--bad)}
+.empty-list{color:var(--ink-2);font-size:.9rem;padding:.4rem 0}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1rem;padding-block:.5rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1320px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:.5rem;background:none;border:0;padding:.2rem 0;cursor:pointer;font-family:var(--f-display);font-size:1.3rem;color:var(--navy);min-height:44px}
+.brand svg{width:30px;height:30px;flex:none}
+.step-count{font-weight:700;font-variant-numeric:tabular-nums;background:var(--surface-2);border-radius:99px;padding:.15em .75em;font-size:.92rem}
+.save{font-size:.85rem;color:var(--ink-2);display:inline-flex;align-items:center;gap:.35em}
+.save::before{content:"";width:.6em;height:.6em;border-radius:50%;background:var(--good)}
+.save[data-state="saving"]::before{background:var(--amber)}
+.save[data-state="error"]{color:var(--bad);font-weight:700}
+.save[data-state="error"]::before{background:var(--bad)}
+.top-actions{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
+
+/* ---------- app layout ---------- */
+.layout{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1fr;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.steps-side{display:none}
+@media (min-width:1024px){
+  .layout{grid-template-columns:230px minmax(0,1fr);gap:2rem}
+  .steps-side{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);align-self:start;padding-block:1.5rem}
+  .progress{display:none}
+}
+.side-group{font-size:.78rem;font-weight:700;letter-spacing:.06em;color:var(--ink-2);margin:1rem 0 .4rem}
+.side-group:first-child{margin-top:0}
+.side-list{list-style:none;margin:0;padding:0;display:grid;gap:.2rem}
+.side-list button{width:100%;display:flex;align-items:center;gap:.6rem;text-align:left;background:none;border:0;border-radius:10px;padding:.5rem .6rem;cursor:pointer;min-height:44px;color:var(--ink)}
+.side-list button:hover{background:var(--surface-2)}
+.side-list button[aria-current="step"]{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--navy);font-weight:700}
+.dot{flex:none;width:1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;font-size:.85rem;font-weight:700;border:1.5px solid var(--line);background:var(--surface);font-variant-numeric:tabular-nums}
+[aria-current="step"] .dot{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-fg)}
+.dot.done{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+.side-note{margin-top:1.4rem;font-size:.82rem;color:var(--ink-2);border-top:1px solid var(--line);padding-top:1rem}
+
+.progress{padding-top:1rem}
+.bar{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .3s}
+.pchips{display:flex;gap:.35rem;overflow-x:auto;padding:.6rem 0 .2rem;scrollbar-width:thin}
+.pchips button{flex:none;display:flex;align-items:center;gap:.4rem;border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:.25rem .75rem .25rem .3rem;cursor:pointer;min-height:40px;font-size:.88rem;color:var(--ink)}
+.pchips button[aria-current="step"]{border-color:var(--navy);font-weight:700}
+.pchips .dot{width:1.6em;height:1.6em;font-size:.78rem}
+
+main{min-width:0;padding-block:1.25rem 0}
+.step-head{display:grid;gap:.35rem;margin-bottom:1.25rem}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.06em;color:var(--teal)}
+.step-head h1{font-size:clamp(1.7rem,3.4vw,2.3rem);line-height:1.2;color:var(--navy)}
+.step-head h1:focus{outline:none}
+.lead{font-size:1.06rem;color:var(--ink-2);max-width:62ch}
+.stack{display:grid;gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.15rem 1.2rem}
+.card h2{font-size:1.25rem;color:var(--navy);margin-bottom:.6rem}
+.card h3{font-size:1rem;margin-bottom:.4rem}
+.q-num{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--navy);color:var(--surface);font-size:.82rem;margin-right:.4rem;vertical-align:.1em;font-family:var(--f-body);font-weight:700}
+.note{display:flex;gap:.6rem;align-items:flex-start;background:var(--surface-2);border-radius:10px;padding:.75rem .9rem;font-size:.93rem}
+.note.warn{background:var(--amber-soft)}
+.note.ok{background:var(--good-soft)}
+.note b{flex:none}
+.two{display:grid;gap:1rem}
+@media (min-width:760px){.two{grid-template-columns:1fr 1fr}}
+.bottom-nav{position:sticky;bottom:0;z-index:10;margin-top:2rem;display:flex;gap:.6rem;justify-content:space-between;align-items:center;background:var(--bg);border-top:1px solid var(--line);padding-block:.75rem calc(.75rem + env(safe-area-inset-bottom,0px))}
+.bottom-nav .btn{min-width:0}
+.bottom-nav .next{flex:0 1 auto}
+
+/* ---------- start screen ---------- */
+.start{max-width:1100px;margin:0 auto;padding-block:1.5rem 3rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:1.4rem}
+.start-hero{display:grid;gap:1.25rem;align-items:center}
+@media (min-width:860px){.start-hero{grid-template-columns:1fr 1.05fr}}
+.start-hero h1{font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.08;color:var(--navy)}
+.start-hero .sub{font-size:1.15rem;margin-top:.6rem}
+.flow{list-style:none;padding:0;margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.3rem .2rem;align-items:center;font-size:.95rem;color:var(--ink-2)}
+.flow li{display:flex;align-items:center;gap:.2rem}
+.flow li+li::before{content:"→";color:var(--teal);font-weight:700;margin-right:.2rem}
+.flow b{color:var(--ink)}
+.hero-map{border-radius:16px;overflow:hidden;border:1px solid var(--line);max-width:100%}
+.hero-map svg{display:block;width:100%;height:auto}
+.start-grid{display:grid;gap:1.2rem}
+@media (min-width:860px){.start-grid{grid-template-columns:1fr 1fr}}
+.start-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.slots{display:grid;gap:.7rem}
+.slot{border:1.5px solid var(--line);border-radius:10px;padding:.8rem .9rem;display:grid;gap:.35rem}
+.slot.active{border-color:var(--teal)}
+.slot-top{display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+.slot-name{font-weight:700}
+.slot-meta{font-size:.84rem;color:var(--ink-2)}
+.slot-actions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem}
+
+/* ---------- step 1: map ---------- */
+.explore{display:grid;gap:1.2rem}
+@media (min-width:1200px){.explore{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+.map-scroll{overflow-x:auto;border-radius:16px;border:1px solid var(--line);-webkit-overflow-scrolling:touch}
+.map{position:relative;min-width:620px;aspect-ratio:1000/620}
+.map > svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.spot{position:absolute;width:15%;height:22%;transform:translate(-50%,-50%);border:2px dashed transparent;border-radius:14px;background:transparent;cursor:pointer;padding:0;display:flex;align-items:flex-end;justify-content:center}
+.spot:hover{background:var(--spot-hover);border-color:var(--m-edge)}
+.spot.on{border-color:var(--m-hl);background:var(--spot-hover)}
+.spot-pill{display:inline-flex;align-items:center;gap:.3em;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:99px;padding:.2em .65em .2em .45em;font-size:.84rem;font-weight:700;white-space:nowrap;margin-bottom:-.9em;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.spot-pill svg{width:16px;height:16px;flex:none}
+.spot.on .spot-pill{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.place-panel{display:grid;gap:1rem}
+.place-card .pc-head{display:flex;gap:.7rem;align-items:center;margin-bottom:.6rem}
+.pc-icon{width:48px;height:48px;border-radius:12px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;flex:none}
+.pc-icon svg{width:28px;height:28px}
+.place-card h2{margin:0}
+.place-card dl{margin:.4rem 0 1rem;display:grid;gap:.3rem;font-size:.93rem}
+.place-card dt{font-weight:700;display:inline}
+.place-card dd{display:inline;margin:0;color:var(--ink-2)}
+.place-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.45rem}
+.place-list button{width:100%;display:flex;align-items:center;gap:.45rem;min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);padding:.35rem .6rem;cursor:pointer;text-align:left;font-weight:500;color:var(--ink)}
+.place-list button svg{width:20px;height:20px;flex:none;color:var(--teal)}
+.place-list button[aria-pressed="true"]{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);font-weight:700}
+.place-list button[aria-pressed="true"]::after{content:"✓ 선택";margin-left:auto;font-size:.78rem;color:var(--navy)}
+
+/* ---------- step 2 ---------- */
+.place-tag{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:.2rem .4rem .2rem .8rem;font-weight:700}
+.place-tag svg{width:20px;height:20px;color:var(--teal)}
+.scen-grid{display:grid;gap:.8rem}
+@media (min-width:760px){.scen-grid{grid-template-columns:repeat(3,1fr)}}
+.scenario{display:flex;flex-direction:column;gap:.5rem;text-align:left;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);padding:1rem;cursor:pointer;min-height:140px;color:var(--ink)}
+.scenario:hover{border-color:var(--navy)}
+.scenario[aria-pressed="true"]{border-color:var(--teal);box-shadow:inset 0 0 0 1.5px var(--teal);background:var(--teal-soft)}
+.sc-tag{font-size:.78rem;font-weight:700;letter-spacing:.05em;color:var(--teal)}
+.sc-text{font-size:1.02rem;font-weight:500;flex:1}
+.sc-state{font-size:.86rem;color:var(--ink-2);font-weight:700}
+.scenario[aria-pressed="true"] .sc-state{color:var(--teal)}
+.scenario.custom{border-style:dashed}
+
+/* ---------- step 3 ---------- */
+.helper{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .6rem}
+.helper span{font-size:.88rem;background:var(--amber-soft);border-radius:99px;padding:.15em .75em}
+.statement{background:var(--surface-2);border-radius:12px;padding:1rem}
+.statement textarea{font-size:1.05rem;font-weight:500;background:var(--surface)}
+
+/* ---------- step 4/5 ---------- */
+.problem-box{border-left:4px solid var(--teal);background:var(--surface);border-radius:0 10px 10px 0;padding:.7rem 1rem;font-weight:500}
+.problem-box small{display:block;color:var(--ink-2);font-weight:700;font-size:.78rem;letter-spacing:.05em}
+.method-grid{display:grid;gap:.9rem}
+@media (min-width:760px){.method-grid{grid-template-columns:1fr 1fr}}
+.method{display:grid;gap:.55rem;align-content:start}
+.method-head{display:flex;gap:.6rem;align-items:center}
+.method-sym{font-size:1.4rem;width:44px;height:44px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;flex:none}
+.method-head h2{margin:0;font-size:1.3rem}
+.method p{font-size:.92rem;color:var(--ink-2)}
+.idea-list{display:grid;gap:.8rem}
+.idea{display:grid;gap:.55rem}
+.idea-top{display:flex;gap:.5rem;align-items:center}
+.idea-top select{width:auto;flex:none;min-width:8.5em}
+.idea-top input{flex:1;min-width:0;font-weight:700}
+.count-pill{display:inline-block;font-size:.85rem;font-weight:700;padding:.1em .7em;border-radius:99px;background:var(--amber-soft);color:var(--amber);margin-left:.4rem;vertical-align:.15em;font-family:var(--f-body)}
+.count-pill.ok{background:var(--good-soft);color:var(--good)}
+.cmp-grid{display:grid;gap:.9rem}
+@media (min-width:860px){.cmp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cmp{display:grid;gap:.7rem;align-content:start}
+.cmp.chosen{border-color:var(--teal);box-shadow:inset 0 0 0 1.5px var(--teal)}
+.cmp-title{display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+.cmp-title h3{font-size:1.1rem;margin:0}
+.mtag{font-size:.78rem;font-weight:700;padding:.1em .6em;border-radius:99px;background:var(--surface-2);white-space:nowrap}
+.crit{display:grid;gap:.3rem}
+.crit p{font-size:.92rem;font-weight:500}
+.tally{font-size:.86rem;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.choose{justify-self:start}
+.choose[aria-pressed="true"]{background:var(--teal-soft);border-color:var(--teal);font-weight:700}
+.wrap-box{background:var(--surface-2);border-radius:var(--r);padding:1.1rem 1.2rem;display:grid;gap:.7rem}
+.wrap-box h2{font-size:1.2rem;color:var(--navy)}
+.row-btns{display:flex;flex-wrap:wrap;gap:.5rem}
+
+/* ---------- step 6: canvas ---------- */
+.tip{display:flex;gap:.7rem;align-items:flex-start;border:1.5px dashed var(--teal);border-radius:12px;padding:.75rem 1rem;font-size:.95rem}
+.tip svg{flex:none;width:24px;height:24px;color:var(--teal);margin-top:.1rem}
+.toolbar{display:flex;flex-wrap:wrap;gap:.4rem .9rem;align-items:center;margin-bottom:.6rem}
+.tgroup{display:flex;gap:.3rem;align-items:center;flex-wrap:wrap}
+.tgroup .tl{font-size:.8rem;color:var(--ink-2);font-weight:700;margin-right:.1rem}
+.tbtn{min-height:42px;min-width:42px;padding:.25em .65em;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;gap:.35em;font-size:.9rem;color:var(--ink)}
+.tbtn[aria-pressed="true"]{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);font-weight:700}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.sw{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid var(--paper-line)}
+.lw{display:inline-block;background:currentColor;border-radius:99px;width:18px}
+.canvas-wrap{border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);max-width:100%}
+#sketch{display:block;width:100%;height:auto;aspect-ratio:1000/625;touch-action:none;cursor:crosshair;background:var(--paper)}
+.canvas-state{font-size:.85rem;color:var(--ink-2);margin-top:.4rem}
+
+/* ---------- step 7 ---------- */
+.status-pick{display:grid;gap:.7rem}
+@media (min-width:640px){.status-pick{grid-template-columns:1fr 1fr}}
+.status-pick button{display:grid;gap:.2rem;text-align:left;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);padding:.9rem 1rem;cursor:pointer;min-height:72px;color:var(--ink)}
+.status-pick button b{font-size:1.05rem}
+.status-pick button span{font-size:.88rem;color:var(--ink-2)}
+.status-pick button[aria-pressed="true"]{border-color:var(--teal);box-shadow:inset 0 0 0 1.5px var(--teal);background:var(--teal-soft)}
+.test-grid{display:grid;gap:.8rem}
+@media (min-width:860px){.test-grid{grid-template-columns:1fr 1fr}}
+.test-card{display:grid;gap:.5rem;border:1px solid var(--line);border-radius:10px;padding:.85rem}
+.test-card p{font-weight:700}
+.compare{display:grid;gap:.6rem}
+@media (min-width:760px){.compare{grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch}}
+.cmp-cell{background:var(--surface-2);border-radius:10px;padding:.8rem .9rem}
+.cmp-cell small{display:block;font-weight:700;color:var(--teal);font-size:.8rem;letter-spacing:.05em;margin-bottom:.25rem}
+.cmp-arrow{display:grid;place-items:center;color:var(--teal);font-weight:700;font-size:1.2rem}
+@media (max-width:759px){.cmp-arrow{transform:rotate(90deg)}}
+.muted{color:var(--ink-2)}
+
+/* ---------- step 8 ---------- */
+.fair-hero{display:grid;gap:.7rem;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem}
+.fair-hero .kicker{font-size:.8rem;font-weight:700;letter-spacing:.06em;color:var(--teal)}
+.fair-name{font-family:var(--f-display);font-size:clamp(2rem,5vw,3rem);line-height:1.12;color:var(--navy)}
+.fair-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+.report-wrap{overflow-x:auto}
+
+/* ---------- report "paper" (always a white sheet) ---------- */
+.paper{--m-grass:#dcecd2; --m-grass2:#cbe2bd; --m-road:#c6cfd6; --m-lane:#ffffff; --m-bldg:#ffffff; --m-roof:#5579b3; --m-roof2:#cf7454;
+  --m-win:#b8d3e8; --m-water:#b7dbec; --m-tree:#7cb066; --m-trunk:#86664a; --m-field:#e6c79c; --m-fieldline:#ffffff;
+  --m-awn1:#dc6455; --m-awn2:#efbd47; --m-bin1:#3b78c4; --m-bin2:#3f9a53; --m-bin3:#dc9b33; --m-hl:#d98200; --m-edge:#8796a4;
+  color:var(--paper-ink);display:grid;gap:1.2rem;color-scheme:light}
+.sheet{background:var(--paper);border:1px solid var(--paper-line);border-radius:6px;box-shadow:0 6px 24px rgba(10,30,50,.10);padding:28px 30px;max-width:794px;margin:0 auto;width:100%;display:grid;gap:14px;font-size:14px;line-height:1.6}
+.r-head{border-bottom:2px solid var(--paper-ink);padding-bottom:10px;display:grid;gap:4px}
+.r-kicker{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--paper-accent)}
+.r-title{font-family:var(--f-display);font-size:28px;line-height:1.2;font-weight:400;color:var(--paper-ink)}
+.r-one{font-size:15px;color:var(--paper-ink)}
+.r-meta{display:flex;flex-wrap:wrap;gap:4px 18px;margin:4px 0 0;font-size:12.5px;color:var(--paper-muted)}
+.r-meta div{display:flex;gap:6px}
+.r-meta dt{font-weight:700}
+.r-meta dd{margin:0}
+.r-sec{display:grid;gap:6px;break-inside:avoid-page}
+.r-sec.long{break-inside:auto}
+.r-sec h3{font-size:14.5px;font-weight:700;color:var(--paper-ink);border-bottom:1px solid var(--paper-line);padding-bottom:3px;margin:0;break-after:avoid}
+.r-sec h3 span{color:var(--paper-accent);margin-right:4px;font-variant-numeric:tabular-nums}
+.r-grid{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 12px}
+.r-grid dt{font-weight:700;color:var(--paper-muted);font-size:12.5px;padding-top:1px}
+.r-grid dd{margin:0;min-width:0}
+.r-map{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr);gap:12px;align-items:center}
+.r-map svg{width:100%;height:auto;border:1px solid var(--paper-line);border-radius:4px;display:block}
+.r-list{margin:0;padding-left:1.2em}
+.r-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.r-table th,.r-table td{border:1px solid var(--paper-line);padding:4px 6px;text-align:left;vertical-align:top}
+.r-table th{background:var(--paper-tint);font-weight:700}
+.r-table .sel{font-weight:700;color:var(--paper-accent);white-space:nowrap}
+.r-sketch{border:1px solid var(--paper-line);border-radius:4px;max-width:100%;width:100%;height:auto;max-height:300px;object-fit:contain;background:#fff;display:block}
+.r-box{background:var(--paper-tint);border-radius:4px;padding:6px 10px}
+.empty{color:var(--paper-muted);font-style:italic}
+.r-flag{display:inline-block;font-weight:700;border:1.5px solid var(--paper-ink);border-radius:4px;padding:0 6px;font-size:12px}
+.r-foot{font-size:11.5px;color:var(--paper-muted);border-top:1px solid var(--paper-line);padding-top:6px}
+@media (max-width:600px){.sheet{padding:18px 16px}.r-grid{grid-template-columns:1fr}.r-map{grid-template-columns:1fr}}
+
+/* presentation mode */
+body.presenting .topbar,body.presenting .steps-side,body.presenting .progress,body.presenting .bottom-nav,body.presenting .no-present{display:none!important}
+body.presenting .layout{grid-template-columns:1fr}
+body.presenting .sheet{font-size:17px;max-width:1000px}
+body.presenting .r-title{font-size:40px}
+.exit-present{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);z-index:40}
+
+/* ---------- map svg ---------- */
+.m-grass{fill:var(--m-grass)} .m-grass2{fill:var(--m-grass2)} .m-road{fill:var(--m-road)} .m-lane{stroke:var(--m-lane);stroke-width:3;stroke-dasharray:18 14;fill:none}
+.m-bldg{fill:var(--m-bldg);stroke:var(--m-edge);stroke-width:1.5} .m-roof{fill:var(--m-roof)} .m-roof2{fill:var(--m-roof2)} .m-win{fill:var(--m-win)}
+.m-water{fill:var(--m-water)} .m-tree{fill:var(--m-tree)} .m-trunk{fill:var(--m-trunk)} .m-field{fill:var(--m-field)} .m-fl{fill:none;stroke:var(--m-fieldline);stroke-width:3}
+.m-awn1{fill:var(--m-awn1)} .m-awn2{fill:var(--m-awn2)} .m-bin1{fill:var(--m-bin1)} .m-bin2{fill:var(--m-bin2)} .m-bin3{fill:var(--m-bin3)} .m-cross{fill:var(--m-lane)}
+.m-hl{fill:none;stroke:var(--m-hl);stroke-width:7;stroke-dasharray:16 10} .m-pin{fill:var(--m-hl)} .m-pin-in{fill:#fff}
+.m-label{font:700 30px var(--f-body);fill:var(--paper-ink);paint-order:stroke;stroke:#fff;stroke-width:7px}
+
+/* ---------- dialog & toast ---------- */
+dialog.dlg{border:0;border-radius:16px;padding:0;max-width:min(560px,calc(100vw - 32px));width:100%;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog.dlg.wide{max-width:min(900px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(10,20,35,.5)}
+.dlg-in{display:grid;gap:1rem;padding:1.3rem 1.3rem 1.1rem;max-height:calc(100vh - 48px);overflow:auto}
+.dlg-title{font-family:var(--f-display);font-weight:400;font-size:1.5rem;color:var(--navy)}
+.dlg-body{display:grid;gap:.8rem;font-size:.97rem}
+.dlg-body ul{margin:0;padding-left:1.2em}
+.dlg-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end}
+.t-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.t-table th,.t-table td{border:1px solid var(--line);padding:.4rem .5rem;text-align:left;vertical-align:top}
+.t-table th{background:var(--surface-2)}
+.tbl-wrap{overflow-x:auto}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:.6rem 1.1rem;border-radius:10px;font-weight:500;z-index:50;max-width:calc(100vw - 32px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+/* ---------- print: A4 portrait report only ---------- */
+@media print{
+  :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--paper:#fff;--paper-ink:#000;--paper-muted:#444;--paper-line:#999;--paper-tint:#f0f3f5;--paper-accent:#05524f;color-scheme:light}
+  @page{size:A4 portrait;margin:13mm 14mm}
+  body{background:#fff!important;color:#000}
+  body::before,.topbar,.steps-side,.progress,.bottom-nav,.no-print,.toast,.exit-present,dialog{display:none!important}
+  .layout{display:block;padding:0}
+  main{padding:0}
+  .paper{gap:0}
+  .sheet{box-shadow:none;border:0;border-radius:0;padding:0;max-width:none;font-size:11pt}
+  .sheet+.sheet{break-before:page}
+  .r-title{font-size:22pt}
+  .r-sketch{max-height:95mm}
+  .r-table{font-size:9.5pt}
+}
+</style>
+
+<div id="app"></div>
+<dialog id="dlg" class="dlg"></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* =====================================================================
+   우리 동네 발명 지도 — 초등 4~6학년 발명 수업용 웹앱 (단일 파일)
+   - 외부 서버·로그인·지도 API 없이 동작합니다.
+   - 기록은 브라우저 localStorage에 저장 칸 3개로 자동 저장됩니다.
+   - 사용자 입력은 언제나 esc()로 문자열 처리한 뒤 화면에 넣습니다.
+   ===================================================================== */
+(function () {
+'use strict';
+document.documentElement.lang = 'ko';
+
+/* ---------- 기본 설정 ---------- */
+const STORE_KEY = 'woori-dongne-invention-map:v1';
+const APP_ID = '우리동네발명지도';
+const SLOT_COUNT = 3;
+// 미리 보기 창(iframe) 안에서는 인쇄·다운로드가 막히므로 대체 경로를 보여 줍니다.
+const EMBEDDED = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+/* ---------- 아이콘 (24×24 선 아이콘) ---------- */
+const ic = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICONS = {
+  school: ic('<path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-5h4v5M12 5V2l3 1-3 1"/>'),
+  bus_stop: ic('<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 10h16M8 21v-4M16 21v-4"/><circle cx="8" cy="13.5" r=".8"/><circle cx="16" cy="13.5" r=".8"/>'),
+  park: ic('<circle cx="12" cy="9" r="6"/><path d="M12 15v7M8 22h8"/>'),
+  alley: ic('<path d="M7 22V7a3 3 0 0 1 3-3h5M15 4v2M13 6h4l-.8 3h-2.4z M4 22h6"/>'),
+  library: ic('<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>'),
+  market: ic('<path d="M3 9l2-5h14l2 5zM5 9v12h14V9M10 21v-6h4v6"/>'),
+  recycle: ic('<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>'),
+  playground: ic('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+  trash: ic('<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'),
+  hand: ic('<path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V5.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5A5.5 5.5 0 0 1 5 17l-1.6-3.2a1.5 1.5 0 0 1 2.6-1.5L8 15"/>'),
+};
+const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--btn-bg)"/><path d="M16 6a7 7 0 0 0-7 7c0 5 7 12 7 12s7-7 7-12a7 7 0 0 0-7-7z" fill="var(--btn-fg)"/><path d="M14 13.5h4M16 11v2.5M14.6 16h2.8" stroke="var(--btn-bg)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+/* ---------- 가상 마을 데이터 (수업용 가상 시나리오, 실제 지역 아님) ---------- */
+const PLACES = [
+  { id: 'school', name: '학교 정문', x: 170, y: 150, users: '학생·교직원', desc: '아침마다 많은 학생이 드나드는 곳' },
+  { id: 'park', name: '공원', x: 868, y: 160, users: '어린이·어르신', desc: '나무와 벤치, 연못이 있는 쉼터' },
+  { id: 'bus_stop', name: '버스정류장', x: 590, y: 390, users: '주민·학생', desc: '큰길가에서 버스를 기다리는 곳' },
+  { id: 'alley', name: '골목길', x: 130, y: 480, users: '주민', desc: '집과 집 사이로 난 좁은 길' },
+  { id: 'library', name: '도서관', x: 650, y: 140, users: '이용자', desc: '책을 빌리고 공부하는 조용한 곳' },
+  { id: 'market', name: '시장', x: 395, y: 490, users: '상인·주민', desc: '채소와 생활용품을 사고파는 곳' },
+  { id: 'recycle', name: '분리배출 장소', x: 835, y: 490, users: '주민', desc: '재활용품을 종류별로 모아 버리는 곳' },
+  { id: 'playground', name: '운동장·놀이터', x: 385, y: 150, users: '학생·어린이', desc: '뛰어놀고 운동하는 넓은 마당' },
+];
+const PLACE = Object.fromEntries(PLACES.map(p => [p.id, p]));
+// 문제 카드는 '문제 상황'만 담습니다. 해결책이나 발명품을 먼저 알려 주지 않습니다.
+const SCENARIOS = {
+  school: ['비 오는 날 우산을 정리할 때 바닥이 젖어 미끄럽다', '등교 때 가방과 준비물을 한꺼번에 들고 출입하기 불편하다'],
+  bus_stop: ['바람이 부는 비 오는 날 빗물이 안쪽으로 튄다', '버스가 오는지 보려고 자꾸 정류장 밖으로 나가야 한다'],
+  park: ['벤치에 물기가 남아 앉기 불편하다', '야외 휴지통 주변에 쓰레기가 흩어진다'],
+  alley: ['밤에 가방 안의 열쇠나 작은 물건을 찾기 어렵다', '장을 보고 돌아올 때 손에 든 물건이 자꾸 떨어진다'],
+  library: ['여러 권의 책을 들고 이동하기 어렵다', '책상 위에서 필기도구가 굴러 떨어진다'],
+  market: ['장바구니 속 작은 물건이 섞여 찾기 어렵다', '여러 봉투를 들면 손이 아프다'],
+  recycle: ['재활용품 종류를 구별하기 어렵다', '페트병을 모아 두면 부피가 커서 금방 가득 찬다'],
+  playground: ['공이나 작은 놀이도구를 잠깐 보관할 곳이 부족하다', '운동 후 물병이 자주 넘어져 흙이 묻는다'],
+};
+const scenarioId = (loc, i) => `${loc}_${i === 0 ? 'a' : 'b'}`;
+function scenarioText(id) {
+  if (!id || id === 'custom') return '';
+  const m = /^(.+)_([ab])$/.exec(id);
+  if (!m || !SCENARIOS[m[1]]) return '';
+  return SCENARIOS[m[1]][m[2] === 'a' ? 0 : 1];
+}
+const ALL_SCENARIO_TEXTS = Object.values(SCENARIOS).flat();
+
+const PROBLEM_TYPES = ['불편함', '안전', '환경', '이동', '기타'];
+const USER_CHOICES = ['어린이', '학생', '어르신', '주민', '누구나'];
+const CONSTRAINTS = ['안전', '적은 비용', '사용하기 쉬움', '환경 보호'];
+const MATERIALS = ['종이', '골판지', '빨대', '테이프', '나무젓가락', '페트병', '고무줄', '클립', '끈', '수수깡'];
+const METHODS = {
+  add: { label: '더하기', sym: '➕', desc: '기존 물건에 새로운 부분이나 기능을 더해요.' },
+  remove: { label: '빼기', sym: '➖', desc: '필요 없는 부분을 없애 더 간단하게 만들어요.' },
+  change: { label: '바꾸기', sym: '🔄', desc: '모양·재료·위치·사용 방법을 바꿔요.' },
+  combine: { label: '합치기', sym: '🔗', desc: '두 물건이나 기능을 하나로 합쳐요.' },
+  free: { label: '자유 아이디어', sym: '💡', desc: '방법에 얽매이지 않고 떠오른 생각을 적어요.' },
+};
+const EVAL_CRITERIA = [
+  { k: 'effectiveness', q: '문제를 해결할 수 있나요?' },
+  { k: 'usability', q: '안전하고 사용하기 편리한가요?' },
+  { k: 'buildability', q: '모형으로 만들 수 있나요?' },
+];
+const EVAL_OPTS = [{ v: 'good', l: '좋음', mk: '○' }, { v: 'okay', l: '보통', mk: '△' }, { v: 'retry', l: '더 생각', mk: '?' }];
+const TEST_CRITERIA = ['문제가 해결되나요?', '사용하기 편리한가요?', '안전하게 사용할 수 있나요?', '실제로 만들 가능성이 있나요?'];
+const TEST_OPTS = [{ v: 'good', l: '잘됨', mk: '○' }, { v: 'improve', l: '조금 더 보완', mk: '△' }, { v: 'retry', l: '다시 시도', mk: '↺' }];
+
+const STEPS = [
+  null,
+  { title: '우리 동네 탐색', session: '1~2차시', lead: '우리 동네를 둘러보세요. 어디에서 불편한 일이 생길까요? 관심 있는 장소를 하나 눌러 보세요.' },
+  { title: '문제 발견', session: '1~2차시', lead: '이 장소에서 어떤 일이 불편할까요? 카드에서 고르거나, 내가 발견한 문제를 직접 써요.' },
+  { title: '원인과 사용자 분석', session: '1~2차시', lead: '왜 이런 일이 생길까요? 누가 가장 불편할까요?' },
+  { title: '발명 아이디어 펼치기', session: '1~2차시', lead: '정답은 하나가 아니에요. 다른 방법도 생각해 보세요.' },
+  { title: '최종 아이디어 선정', session: '1~2차시', lead: '내 아이디어들을 견주어 보고, 하나를 직접 골라요.' },
+  { title: '발명품 설계와 제작 기록', session: '3~4차시', lead: '어떤 재료와 구조로 만들면 좋을까요?' },
+  { title: '시험·피드백·개선', session: '3~4차시', lead: '직접 시험해 보니 어떤 점을 고치면 좋겠나요?' },
+  { title: '우리 동네 발명 박람회', session: '3~4차시', lead: '작은 발명 하나가 우리 동네를 바꿀 수 있어요!' },
+];
+
+/* ---------- 작은 도우미 ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nl = (s) => esc(s).replace(/\n/g, '<br>');
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const filled = (s) => typeof s === 'string' && s.trim().length > 0;
+const pad = (n) => String(n).padStart(2, '0');
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const krDate = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`; };
+const krTime = (d) => d.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
+// 받침 유무에 따라 조사 고르기 (예: 학생이 / 어르신이 / 주민이 / 누구나가)
+function josa(word, withB, withoutB) {
+  const w = String(word).trim(); const c = w.charCodeAt(w.length - 1);
+  if (!w || c < 0xac00 || c > 0xd7a3) return w + withB + '(' + withoutB + ')';
+  return w + ((c - 0xac00) % 28 ? withB : withoutB);
+}
+
+/* ---------- 프로젝트 데이터 ---------- */
+function newProject(teamName = '', nickname = '') {
+  const now = new Date().toISOString();
+  return {
+    version: 1, id: uid(), createdAt: now, updatedAt: now, teamName, nickname, currentStep: 1,
+    locationId: null, selectedScenarioId: null, problemDescription: '', situationDescription: '', problemType: '',
+    targetUsers: [], whenWhere: '', rootCauses: [], neededFunctions: [], designConstraints: [],
+    problemStatement: '', problemStatementEdited: false,
+    ideas: [], selectedIdeaId: null, selectionReason: '',
+    inventionName: '', oneLiner: '', coreFunctions: ['', '', ''], usageSteps: ['', '', ''], materials: [],
+    designSketchDataUrl: null, designText: '', buildNotes: '',
+    testStatus: '', testMethod: '',
+    testResults: TEST_CRITERIA.map(c => ({ criterion: c, outcome: 'not_tested', note: '' })),
+    peerFeedback: '', plannedChanges: '', changesMade: '', afterTestNotes: '', neighborhoodImpact: '',
+  };
+}
+
+// 저장된 값이나 불러온 파일을 '안전한 프로젝트'로 다시 만듭니다. 알 수 없는 값은 버립니다.
+function normalizeProject(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('형식');
+  if (raw.version !== 1) throw new Error('버전');
+  const p = newProject();
+  const str = (v, max = 4000) => (typeof v === 'string' ? v.slice(0, max) : '');
+  const arr = (v, n = 30, max = 400) => (Array.isArray(v) ? v.filter(x => typeof x === 'string').slice(0, n).map(x => x.slice(0, max)) : []);
+  const oneOf = (v, list, d) => (list.includes(v) ? v : d);
+  for (const k of ['teamName', 'nickname']) p[k] = str(raw[k], 40);
+  for (const k of ['problemDescription', 'situationDescription', 'whenWhere', 'problemStatement', 'selectionReason', 'inventionName', 'oneLiner',
+    'designText', 'buildNotes', 'testMethod', 'peerFeedback', 'plannedChanges', 'changesMade', 'afterTestNotes', 'neighborhoodImpact']) p[k] = str(raw[k]);
+  p.problemType = oneOf(raw.problemType, PROBLEM_TYPES, '');
+  if (typeof raw.id === 'string' && raw.id.length < 40) p.id = raw.id;
+  for (const k of ['createdAt', 'updatedAt']) if (typeof raw[k] === 'string' && !isNaN(new Date(raw[k]))) p[k] = raw[k];
+  p.currentStep = Number.isInteger(raw.currentStep) ? Math.min(8, Math.max(1, raw.currentStep)) : 1;
+  p.locationId = PLACE[raw.locationId] ? raw.locationId : null;
+  p.selectedScenarioId = raw.selectedScenarioId === 'custom' || scenarioText(raw.selectedScenarioId) ? raw.selectedScenarioId : null;
+  for (const k of ['targetUsers', 'rootCauses', 'neededFunctions', 'designConstraints', 'materials']) p[k] = arr(raw[k]);
+  p.problemStatementEdited = raw.problemStatementEdited === true;
+  const cf = arr(raw.coreFunctions, 3); p.coreFunctions = [0, 1, 2].map(i => cf[i] || '');
+  const us = arr(raw.usageSteps, 12); p.usageSteps = us.length ? us : ['', '', ''];
+  p.ideas = (Array.isArray(raw.ideas) ? raw.ideas : []).slice(0, 40).filter(x => x && typeof x === 'object').map(x => {
+    const ev = x.evaluation && typeof x.evaluation === 'object' ? x.evaluation : {};
+    const evaluation = {};
+    for (const c of EVAL_CRITERIA) if (['good', 'okay', 'retry'].includes(ev[c.k])) evaluation[c.k] = ev[c.k];
+    return { id: typeof x.id === 'string' && x.id.length < 40 ? x.id : uid(), method: oneOf(x.method, Object.keys(METHODS), 'free'), title: str(x.title, 200), description: str(x.description, 2000), evaluation };
+  });
+  p.selectedIdeaId = p.ideas.some(i => i.id === raw.selectedIdeaId) ? raw.selectedIdeaId : null;
+  const img = raw.designSketchDataUrl;
+  p.designSketchDataUrl = typeof img === 'string' && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(img) && img.length < 3000000 ? img : null;
+  p.testStatus = oneOf(raw.testStatus, ['tested', 'not_tested'], '');
+  const tr = Array.isArray(raw.testResults) ? raw.testResults : [];
+  p.testResults = TEST_CRITERIA.map((c, i) => {
+    const r = tr[i] && typeof tr[i] === 'object' ? tr[i] : {};
+    return { criterion: c, outcome: oneOf(r.outcome, ['good', 'improve', 'retry', 'not_tested'], 'not_tested'), note: str(r.note, 500) };
+  });
+  return p;
+}
+
+/* ---------- 저장소 (localStorage, 저장 칸 3개) ---------- */
+let storageOK = true;
+let store = loadStore();
+let P = store.active != null ? store.slots[store.active] : null; // 지금 작업 중인 프로젝트
+let view = 'start';
+let saveState = { state: 'idle', at: null };
+let saveTimer = null;
+const drafts = {}; // 아직 카드로 만들지 않은 아이디어 초안 (화면을 다시 그려도 유지)
+
+function emptyStore() { return { version: 1, active: null, slots: Array(SLOT_COUNT).fill(null), settings: { townName: '발명마을' } }; }
+function loadStore() {
+  const s = emptyStore();
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return s;
+    const data = JSON.parse(raw);
+    if (data && Array.isArray(data.slots)) {
+      s.slots = Array.from({ length: SLOT_COUNT }, (_, i) => { try { return data.slots[i] ? normalizeProject(data.slots[i]) : null; } catch (e) { return null; } });
+      s.active = Number.isInteger(data.active) && s.slots[data.active] ? data.active : null;
+      if (data.settings && typeof data.settings.townName === 'string' && data.settings.townName.trim()) s.settings.townName = data.settings.townName.slice(0, 20);
+    }
+  } catch (e) { storageOK = false; }
+  return s;
+}
+function writeStore() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); storageOK = true; saveState = { state: 'saved', at: new Date() }; }
+  catch (e) { storageOK = false; saveState = { state: 'error', at: null }; }
+  paintSave();
+}
+function touch() {
+  if (P) P.updatedAt = new Date().toISOString();
+  saveState.state = 'saving'; paintSave();
+  clearTimeout(saveTimer); saveTimer = setTimeout(writeStore, 400);
+}
+function flushSave() { clearTimeout(saveTimer); writeStore(); }
+function saveLabel() {
+  if (saveState.state === 'error' || !storageOK) return '이 기기에 저장할 수 없어요 · 활동 파일로 저장하세요';
+  if (saveState.state === 'saving') return '저장하는 중…';
+  if (saveState.at) return `자동 저장됨 · ${krTime(saveState.at)}`;
+  return '자동 저장 켜짐';
+}
+function paintSave() {
+  const el = $('#saveStatus'); if (!el) return;
+  el.textContent = saveLabel();
+  el.dataset.state = !storageOK ? 'error' : saveState.state;
+}
+window.addEventListener('beforeunload', () => { if (saveTimer) flushSave(); });
+window.addEventListener('pagehide', () => { if (saveTimer) flushSave(); });
+
+const town = () => store.settings.townName || '발명마을';
+
+/* ---------- 문제 정리 문장 자동 만들기 ---------- */
+function buildStatement(p) {
+  const place = p.locationId ? PLACE[p.locationId].name : '○○';
+  const users = p.targetUsers.length ? p.targetUsers.join(', ') : '○○';
+  const cause = p.rootCauses.find(filled) || (filled(p.problemDescription) ? '' : '○○');
+  const func = p.neededFunctions.find(filled) || '○○';
+  const causePart = cause ? `${cause} 때문에 불편하므로` : `"${p.problemDescription.trim()}" 문제로 불편하므로`;
+  return `${place}에서 ${josa(users, '이', '가')} ${causePart}, ${func} 기능이 필요하다.`;
+}
+const statementOf = (p) => (filled(p.problemStatement) ? p.problemStatement : buildStatement(p));
+const selectedIdea = (p) => p.ideas.find(i => i.id === p.selectedIdeaId) || null;
+
+/* ---------- 단계별 확인 항목 (부드러운 안내용) ---------- */
+const REQ = {
+  1: p => (p.locationId ? [] : ['지도나 목록에서 장소 하나 고르기']),
+  2: p => (filled(p.problemDescription) ? [] : ['무슨 일이 불편한지 쓰기']),
+  3: p => [
+    !p.targetUsers.length && '이 문제를 겪는 사람 고르기',
+    !p.rootCauses.some(filled) && '불편한 까닭(원인) 1개 이상 쓰기',
+    !p.neededFunctions.some(filled) && '필요한 기능 1개 이상 쓰기',
+  ].filter(Boolean),
+  4: p => (p.ideas.filter(i => filled(i.title)).length >= 2 ? [] : [`아이디어 카드 2개 이상 만들기 (지금 ${p.ideas.filter(i => filled(i.title)).length}개)`]),
+  5: p => [
+    !p.selectedIdeaId && '최종 아이디어 하나 고르기',
+    !filled(p.selectionReason) && '이 아이디어를 고른 이유 쓰기',
+    !filled(p.inventionName) && '발명품 이름 정하기',
+  ].filter(Boolean),
+  6: p => [
+    !filled(p.inventionName) && '발명품 이름 쓰기',
+    !p.usageSteps.some(filled) && '사용 방법 1단계 이상 쓰기',
+    !p.materials.length && '준비할 재료 고르기',
+    !p.designSketchDataUrl && !filled(p.designText) && '설계도 그리기 또는 글로 설명하기',
+  ].filter(Boolean),
+  7: p => {
+    if (!p.testStatus) return ['시험했는지, 아직 못 했는지 고르기'];
+    if (p.testStatus === 'not_tested') return [];
+    return [
+      !filled(p.testMethod) && '어떻게 시험했는지 쓰기',
+      p.testResults.some(r => r.outcome === 'not_tested') && '시험 기준 4개의 결과 고르기',
+    ].filter(Boolean);
+  },
+  8: p => (filled(p.neighborhoodImpact) ? [] : ['우리 동네가 어떻게 달라질지 쓰기']),
+};
+const stepDone = (n) => P && REQ[n](P).length === 0;
+
+/* =====================================================================
+   마을 지도 SVG (외부 지도 API 없이 직접 그림)
+   ===================================================================== */
+function mapSVG(hl) {
+  const tree = (x, y, r = 14) => `<rect class="m-trunk" x="${x - 2.5}" y="${y}" width="5" height="${r + 5}"/><circle class="m-tree" cx="${x}" cy="${y}" r="${r}"/>`;
+  const house = (x, y, w = 46, h = 34, roof = 'm-roof2') => `<rect class="m-bldg" x="${x}" y="${y}" width="${w}" height="${h}"/><path class="${roof}" d="M${x - 4} ${y}L${x + w / 2} ${y - 17}L${x + w + 4} ${y}Z"/><rect class="m-win" x="${x + 8}" y="${y + 9}" width="10" height="10"/><rect class="m-win" x="${x + w - 18}" y="${y + 9}" width="10" height="10"/>`;
+  let s = `<rect class="m-grass" width="1000" height="620"/>`;
+  // 길
+  s += `<rect class="m-road" x="0" y="285" width="1000" height="54"/><rect class="m-road" x="508" y="0" width="46" height="620"/><rect class="m-road" x="262" y="339" width="30" height="281"/><rect class="m-road" x="98" y="339" width="20" height="281"/>`;
+  s += `<path class="m-lane" d="M0 312H508M554 312H1000M531 0V285M531 339V620"/>`;
+  for (let i = 0; i < 5; i++) s += `<rect class="m-cross" x="${468}" y="${291 + i * 10}" width="32" height="5"/>`;
+  for (let i = 0; i < 5; i++) s += `<rect class="m-cross" x="${514 + i * 7.5}" y="345" width="4" height="26"/>`;
+  // 학교
+  s += `<rect class="m-grass2" x="62" y="52" width="216" height="222" rx="12"/><rect class="m-bldg" x="95" y="88" width="150" height="86"/><rect class="m-roof" x="89" y="76" width="162" height="14"/>`;
+  for (let r = 0; r < 2; r++) for (let c = 0; c < 5; c++) s += `<rect class="m-win" x="${106 + c * 27}" y="${100 + r * 26}" width="16" height="16"/>`;
+  s += `<rect class="m-roof" x="160" y="152" width="20" height="22"/><circle class="m-bldg" cx="170" cy="64" r="9"/><rect class="m-trunk" x="252" y="40" width="3" height="48"/><path class="m-awn1" d="M255 40h22l-6 7 6 7h-22z"/>`;
+  s += `<rect class="m-roof2" x="140" y="236" width="10" height="38"/><rect class="m-roof2" x="190" y="236" width="10" height="38"/>`;
+  s += tree(80, 205) + tree(254, 210) + tree(84, 248, 11);
+  // 운동장·놀이터
+  s += `<rect class="m-field" x="310" y="60" width="150" height="180" rx="66"/><rect class="m-fl" x="328" y="80" width="114" height="140" rx="52"/><path class="m-fl" d="M328 150H442"/><circle class="m-bldg" cx="385" cy="150" r="9"/>`;
+  // 도서관
+  s += `<rect class="m-bldg" x="582" y="84" width="140" height="92"/><path class="m-roof" d="M574 86L652 44L730 86Z"/>`;
+  for (let c = 0; c < 4; c++) s += `<rect class="m-win" x="${598 + c * 30}" y="${100}" width="14" height="60"/>`;
+  s += `<rect class="m-bldg" x="600" y="176" width="104" height="8"/><rect class="m-bldg" x="592" y="184" width="120" height="8"/>`;
+  s += tree(744, 118, 12) + tree(574, 230, 12);
+  // 공원
+  s += `<rect class="m-grass2" x="776" y="40" width="210" height="232" rx="34"/><ellipse class="m-water" cx="902" cy="200" rx="56" ry="30"/>`;
+  s += tree(812, 82, 18) + tree(860, 70, 15) + tree(952, 96, 17) + tree(806, 150, 14) + tree(960, 160, 12);
+  s += `<rect class="m-trunk" x="842" y="128" width="44" height="7" rx="2"/><rect class="m-trunk" x="846" y="135" width="4" height="10"/><rect class="m-trunk" x="878" y="135" width="4" height="10"/>`;
+  // 버스정류장과 버스
+  s += `<rect class="m-win" x="560" y="352" width="70" height="30" rx="3"/><rect class="m-roof" x="554" y="344" width="82" height="10" rx="3"/><rect class="m-trunk" x="644" y="342" width="4" height="44"/><circle class="m-awn2" cx="646" cy="342" r="10"/>`;
+  s += `<rect class="m-awn2" x="640" y="290" width="110" height="20" rx="6"/><rect class="m-win" x="652" y="294" width="14" height="10"/><rect class="m-win" x="672" y="294" width="14" height="10"/><rect class="m-win" x="692" y="294" width="14" height="10"/><rect class="m-win" x="712" y="294" width="14" height="10"/>`;
+  // 골목길
+  s += house(22, 388, 60, 38) + house(22, 466, 60, 38, 'm-roof') + house(22, 546, 60, 38) + house(140, 388, 96, 38, 'm-roof') + house(140, 466, 96, 38) + house(140, 546, 96, 38, 'm-roof');
+  s += `<rect class="m-trunk" x="105" y="440" width="4" height="34"/><circle class="m-awn2" cx="107" cy="440" r="7"/>`;
+  // 시장
+  for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
+    const x = 320 + c * 54, y = 430 + r * 82;
+    s += `<rect class="m-bldg" x="${x}" y="${y}" width="46" height="40"/>`;
+    for (let k = 0; k < 4; k++) s += `<rect class="${k % 2 ? 'm-awn2' : 'm-awn1'}" x="${x - 3 + k * 13}" y="${y - 6}" width="13" height="14"/>`;
+  }
+  // 집들 (가운데 아래)
+  s += house(574, 432, 50, 36) + house(640, 432, 50, 36, 'm-roof') + house(574, 520, 50, 36, 'm-roof') + house(640, 520, 50, 36);
+  s += tree(320, 260, 10) + tree(470, 260, 10) + tree(726, 600, 12) + tree(960, 600, 12);
+  // 분리배출 장소
+  s += `<rect class="m-grass2" x="748" y="420" width="176" height="128" rx="10"/><rect class="m-bldg" x="756" y="430" width="160" height="10"/>`;
+  const bins = ['m-bin1', 'm-bin2', 'm-bin3', 'm-roof2'];
+  bins.forEach((b, i) => { s += `<rect class="${b}" x="${770 + i * 36}" y="462" width="28" height="44" rx="3"/><rect class="m-bldg" x="${768 + i * 36}" y="456" width="32" height="8" rx="2"/>`; });
+  s += house(942, 432, 46, 34, 'm-roof') + house(942, 520, 46, 34);
+  if (hl && PLACE[hl]) {
+    const p = PLACE[hl];
+    s += `<circle class="m-hl" cx="${p.x}" cy="${p.y}" r="92"/><path class="m-pin" d="M${p.x} ${p.y + 6}c-18-22-28-34-28-48a28 28 0 0 1 56 0c0 14-10 26-28 48z"/><circle class="m-pin-in" cx="${p.x}" cy="${p.y - 42}" r="10"/>`;
+    const ly = p.y > 400 ? p.y - 104 : p.y + 128;
+    s += `<text class="m-label" x="${Math.min(880, Math.max(120, p.x))}" y="${ly}" text-anchor="middle">${esc(p.name)}</text>`;
+  }
+  return `<svg viewBox="0 0 1000 620" class="map-svg" aria-hidden="true" focusable="false">${s}</svg>`;
+}
+
+/* =====================================================================
+   화면 그리기
+   ===================================================================== */
+const app = $('#app');
+
+function header() {
+  const n = P ? P.currentStep : 1;
+  return `<header class="topbar no-print"><div class="topbar-in">
+    <button class="brand" data-act="home" aria-label="우리 동네 발명 지도 처음 화면으로">${LOGO}<span>우리 동네 발명 지도</span></button>
+    ${view === 'app' ? `<span class="step-count" aria-label="전체 8단계 중 ${n}단계">${n}/8</span>` : ''}
+    <span id="saveStatus" class="save" role="status"></span>
+    <div class="top-actions">
+      <button class="btn ghost sm" data-act="teacher">선생님 안내</button>
+      ${view === 'app' ? `<button class="btn ghost sm" data-act="resetProject">처음부터 다시 하기</button>` : ''}
+    </div></div></header>`;
+}
+
+function render(opts = {}) {
+  // 다시 그린 뒤 포커스와 커서 위치를 되살립니다.
+  const a = document.activeElement;
+  const key = opts.stepChanged ? null : focusKey(a);
+  const caret = a && typeof a.selectionStart === 'number' ? a.selectionStart : null;
+  document.body.classList.remove('presenting');
+  app.innerHTML = header() + (view === 'start' ? renderStart() : renderApp());
+  paintSave();
+  if (view === 'app' && P.currentStep === 6) initCanvas();
+  if (opts.stepChanged) {
+    window.scrollTo(0, 0);
+    const h = $('#step-title'); if (h) h.focus({ preventScroll: true });
+  } else if (key) {
+    const el = document.querySelector(key);
+    if (el) { el.focus({ preventScroll: true }); if (caret != null) { try { el.setSelectionRange(caret, caret); } catch (e) { /* 무시 */ } } }
+  }
+}
+function focusKey(el) {
+  if (!el || el === document.body || !app.contains(el)) return null;
+  if (el.id) return '#' + CSS.escape(el.id);
+  const ds = el.dataset; const parts = Object.keys(ds).map(k => `[data-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}="${CSS.escape(ds[k])}"]`);
+  return parts.length ? el.tagName.toLowerCase() + parts.join('') : null;
+}
+
+/* ---------- 시작 화면 ---------- */
+function renderStart() {
+  const has = store.slots.some(Boolean);
+  const latest = latestSlot();
+  const slots = store.slots.map((p, i) => {
+    if (!p) return `<div class="slot"><div class="slot-top"><span class="slot-name">저장 칸 ${i + 1}</span><span class="slot-meta">비어 있음</span></div>
+      <div class="slot-actions"><button class="btn sm" data-act="startInSlot" data-i="${i}">여기에서 새로 시작</button></div></div>`;
+    const who = [p.teamName, p.nickname].filter(filled).map(esc).join(' · ') || '이름 없는 모둠';
+    return `<div class="slot ${store.active === i ? 'active' : ''}"><div class="slot-top"><span class="slot-name">저장 칸 ${i + 1} · ${who}</span>
+      <span class="slot-meta">${p.currentStep}/8 ${esc(STEPS[p.currentStep].title)}</span></div>
+      <div class="slot-meta">${filled(p.inventionName) ? `발명품: <b>${esc(p.inventionName)}</b>` : p.locationId ? `장소: ${esc(PLACE[p.locationId].name)}` : '아직 장소를 고르지 않았어요'} · ${krDate(p.updatedAt)} ${krTime(new Date(p.updatedAt))} 저장</div>
+      <div class="slot-actions"><button class="btn sm primary" data-act="openSlot" data-i="${i}">이어하기</button><button class="btn sm danger" data-act="deleteSlot" data-i="${i}">지우기</button></div></div>`;
+  }).join('');
+  return `<main class="start" id="main">
+    <section class="start-hero">
+      <div>
+        <p class="eyebrow">발명과 융합교육 · 지역사회를 변화시키는 발명</p>
+        <h1>우리 동네<br>발명 지도</h1>
+        <p class="sub">우리 동네의 불편함을 찾아 작은 발명으로 바꿔 보자!</p>
+        <ol class="flow" aria-label="활동 순서"><li><b>동네를 살펴보고</b></li><li><b>문제를 찾고</b></li><li><b>아이디어를 만들고</b></li><li><b>발명품을 개선해요</b></li></ol>
+      </div>
+      <div class="hero-map">${mapSVG(null)}</div>
+    </section>
+    <div class="start-grid">
+      <section class="card" aria-labelledby="start-h">
+        <h2 id="start-h">우리 동네에 숨은 발명 문제를 찾아볼까요?</h2>
+        <div class="stack">
+          <div class="field"><label for="s-team">모둠 이름 <span class="hint">써도 되고 안 써도 돼요</span></label><input type="text" id="s-team" maxlength="30" placeholder="예: 반짝반짝 모둠" autocomplete="off"></div>
+          <div class="field"><label for="s-nick">발명가 별명 <span class="hint">진짜 이름은 쓰지 않아도 돼요</span></label><input type="text" id="s-nick" maxlength="30" placeholder="예: 꼬마 에디슨" autocomplete="off"></div>
+        </div>
+        <div class="start-actions">
+          <button class="btn primary" data-act="startNew">발명 탐험 시작하기</button>
+          <button class="btn" data-act="resume" ${has ? '' : 'disabled aria-describedby="no-save"'}>저장한 활동 이어하기</button>
+          <button class="btn ghost" data-act="teacher">선생님 안내 보기</button>
+        </div>
+        <p class="fine" id="no-save" style="margin-top:.7rem">${has ? `가장 최근 기록: 저장 칸 ${latest + 1} (${store.slots[latest].currentStep}/8 ${esc(STEPS[store.slots[latest].currentStep].title)})` : '아직 저장한 활동이 없어요.'}</p>
+      </section>
+      <section class="card" aria-labelledby="slot-h">
+        <h2 id="slot-h">저장 칸</h2>
+        <p class="fine" style="margin-bottom:.7rem">모둠마다 다른 칸을 쓰면 한 기기에서 3개 모둠까지 기록할 수 있어요.</p>
+        <div class="slots">${slots}</div>
+        <div class="row-btns" style="margin-top:.9rem"><button class="btn sm" data-act="importFile">활동 파일 불러오기</button></div>
+        <p class="fine" style="margin-top:.6rem">활동은 이 기기의 이 브라우저에만 저장돼요. 다른 기기와 자동으로 이어지지 않으니, 다른 기기에서 이어 하려면 활동 파일을 저장해 두세요.</p>
+      </section>
+    </div>
+    <p class="fine">이 앱의 지도는 수업을 위해 만든 가상의 ${esc(town())}이에요. 로그인, 위치 정보, 실명이 필요 없어요.</p>
+  </main>`;
+}
+function latestSlot() {
+  let best = -1, t = -Infinity;
+  store.slots.forEach((p, i) => { if (p) { const v = new Date(p.updatedAt).getTime() || 0; if (v > t) { t = v; best = i; } } });
+  return best;
+}
+
+/* ---------- 활동 화면 (공통 틀) ---------- */
+function renderSide() {
+  const item = (n) => `<li><button data-act="goto" data-n="${n}" ${P.currentStep === n ? 'aria-current="step"' : ''}>
+    <span class="dot ${stepDone(n) && P.currentStep !== n ? 'done' : ''}" aria-hidden="true">${stepDone(n) && P.currentStep !== n ? '✓' : n}</span>
+    <span>${esc(STEPS[n].title)}${stepDone(n) ? '<span class="sr"> (완료)</span>' : ''}</span></button></li>`;
+  return `<p class="side-group">1~2차시 · 문제 발견과 구상</p><ol class="side-list">${[1, 2, 3, 4, 5].map(item).join('')}</ol>
+    <p class="side-group">3~4차시 · 제작과 개선</p><ol class="side-list" start="6">${[6, 7, 8].map(item).join('')}</ol>
+    <p class="side-note">쓰는 내용은 이 기기에 저장 칸 ${store.active + 1}로 자동 저장돼요.${[P.teamName, P.nickname].some(filled) ? `<br>${[P.teamName, P.nickname].filter(filled).map(esc).join(' · ')}` : ''}</p>`;
+}
+function renderApp() {
+  const n = P.currentStep; const S = STEPS[n];
+  const chips = [1, 2, 3, 4, 5, 6, 7, 8].map(i => `<button data-act="goto" data-n="${i}" ${n === i ? 'aria-current="step"' : ''} aria-label="${i}단계 ${esc(STEPS[i].title)}${stepDone(i) ? ' 완료' : ''}">
+    <span class="dot ${stepDone(i) && n !== i ? 'done' : ''}" aria-hidden="true">${stepDone(i) && n !== i ? '✓' : i}</span><span aria-hidden="true">${['','동네 탐색','문제 발견','원인 분석','아이디어','선정','설계·제작','시험·개선','박람회'][i]}</span></button>`).join('');
+  const body = [null, step1, step2, step3, step4, step5, step6, step7, step8][n]();
+  const next = n < 8 ? `<button class="btn primary next" data-act="next">다음: ${esc(STEPS[n + 1].title)} →</button>` : `<button class="btn primary next" data-act="home">처음 화면으로</button>`;
+  return `<div class="layout">
+    <aside class="steps-side no-print" aria-label="활동 단계" id="side">${renderSide()}</aside>
+    <main id="main">
+      <div class="progress no-print" aria-label="활동 단계">
+        <div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="${n}" aria-label="진행률"><span style="width:${n / 8 * 100}%"></span></div>
+        <div class="pchips">${chips}</div>
+      </div>
+      <div class="step-head no-present no-print">
+        <p class="eyebrow">${S.session} · ${n}단계</p>
+        <h1 id="step-title" tabindex="-1">${esc(S.title)}</h1>
+        <p class="lead">${esc(S.lead)}</p>
+      </div>
+      ${body}
+      <nav class="bottom-nav no-print" aria-label="단계 이동">
+        <button class="btn" data-act="prev">${n === 1 ? '← 처음 화면' : `← 이전: ${esc(STEPS[n - 1].title)}`}</button>
+        ${next}
+      </nav>
+    </main></div>`;
+}
+
+/* ---------- 공통 입력 부품 ---------- */
+function listEditor(key, label, placeholder, items, { ordered = false } = {}) {
+  const rows = items.map((v, i) => `<li>${ordered ? `<span class="num" aria-hidden="true">${i + 1}</span>` : ''}
+    <input type="text" data-f="${key}" data-i="${i}" value="${esc(v)}" aria-label="${esc(label)} ${i + 1}">
+    <button class="icon-btn" data-act="removeItem" data-key="${key}" data-i="${i}" aria-label="${esc(label)} ${i + 1} 지우기">${ICONS.trash}</button></li>`).join('');
+  return `<div class="add-row"><input type="text" id="add-${key}" data-enter="addItem" data-key="${key}" placeholder="${esc(placeholder)}" aria-label="${esc(label)} 새로 쓰기" maxlength="200">
+    <button class="btn" data-act="addItem" data-key="${key}">추가</button></div>
+    ${items.length ? `<ul class="list">${rows}</ul>` : `<p class="empty-list">아직 없어요. 위 칸에 쓰고 '추가'를 누르세요.</p>`}`;
+}
+const seg = (opts, cur, attrs, label) => `<div class="seg" role="group" aria-label="${esc(label)}">${opts.map(o =>
+  `<button type="button" ${attrs} data-v="${o.v}" aria-pressed="${cur === o.v}"><span class="mk" aria-hidden="true">${o.mk}</span>${o.l}</button>`).join('')}</div>`;
+
+/* ---------- 1단계: 우리 동네 탐색 ---------- */
+function step1() {
+  const sel = P.locationId ? PLACE[P.locationId] : null;
+  const spots = PLACES.map(p => {
+    const on = P.locationId === p.id;
+    return `<button class="spot ${on ? 'on' : ''}" style="left:${p.x / 10}%;top:${p.y / 6.2}%" data-act="pickPlace" data-id="${p.id}" aria-pressed="${on}" aria-label="${esc(p.name)}${on ? ', 선택됨' : ''}">
+      <span class="spot-pill">${ICONS[p.id]}<span>${esc(p.name)}</span>${on ? '<b aria-hidden="true">✓</b>' : ''}</span></button>`;
+  }).join('');
+  const list = PLACES.map(p => `<li><button data-act="pickPlace" data-id="${p.id}" data-src="list" aria-pressed="${P.locationId === p.id}">${ICONS[p.id]}${esc(p.name)}</button></li>`).join('');
+  const card = sel ? `<section class="card place-card" aria-live="polite">
+      <div class="pc-head"><span class="pc-icon">${ICONS[sel.id]}</span><div><p class="eyebrow">고른 장소</p><h2>${esc(sel.name)}</h2></div></div>
+      <p>${esc(sel.desc)}</p>
+      <dl><div><dt>자주 오는 사람 </dt><dd>${esc(sel.users)}</dd></div><div><dt>숨은 불편함 </dt><dd>상황 카드 2장 + 내가 찾은 문제</dd></div></dl>
+      <button class="btn primary" data-act="next" style="width:100%">이 장소의 불편함 찾아보기</button></section>`
+    : `<section class="card" aria-live="polite"><h2>장소 카드</h2><p class="muted">지도에서 장소를 누르거나 아래 목록에서 고르면 여기에 장소 카드가 열려요.</p></section>`;
+  return `<div class="explore">
+    <div class="stack">
+      <div class="map-scroll"><div class="map" role="group" aria-label="${esc(town())} 지도. 장소 8곳을 고를 수 있어요.">${mapSVG(null)}${spots}</div></div>
+      <p class="fine">이 지도는 수업을 위해 만든 가상의 ${esc(town())}입니다. 화면이 좁으면 지도를 옆으로 밀어 보세요.</p>
+    </div>
+    <div class="place-panel">${card}
+      <section class="card"><h2 style="font-size:1.05rem">목록에서 고르기</h2><ul class="place-list">${list}</ul></section>
+    </div></div>`;
+}
+
+/* ---------- 2단계: 문제 발견 ---------- */
+function step2() {
+  if (!P.locationId) return needFirst(1, '먼저 1단계에서 문제를 찾을 장소를 골라 주세요.');
+  const loc = PLACE[P.locationId];
+  const cards = SCENARIOS[loc.id].map((t, i) => {
+    const id = scenarioId(loc.id, i); const on = P.selectedScenarioId === id;
+    return `<button class="scenario" data-act="pickScenario" data-id="${id}" aria-pressed="${on}"><span class="sc-tag">상황 카드 ${i ? 'B' : 'A'}</span><span class="sc-text">${esc(t)}</span><span class="sc-state">${on ? '✓ 고른 문제' : '이 문제 고르기'}</span></button>`;
+  }).join('');
+  const customOn = P.selectedScenarioId === 'custom';
+  return `<div class="stack">
+    <p><span class="place-tag">${ICONS[loc.id]}${esc(loc.name)} <button class="link" data-act="goto" data-n="1">장소 바꾸기</button></span></p>
+    <section aria-labelledby="sc-h" class="stack"><h2 id="sc-h" class="sr">이 장소에서 생기는 일</h2>
+      <div class="scen-grid">${cards}
+        <button class="scenario custom" data-act="pickScenario" data-id="custom" aria-pressed="${customOn}"><span class="sc-tag">내가 찾은 문제</span><span class="sc-text">내가 직접 발견한 문제 적기</span><span class="sc-state">${customOn ? '✓ 직접 쓰는 중' : '직접 쓰기'}</span></button>
+      </div>
+      <p class="fine">카드는 생각을 넓히는 예시일 뿐 정답이 아니에요. 실제로 겪어 본 일을 써도 좋아요.</p>
+    </section>
+    <section class="card stack">
+      <div class="field"><label for="f-problem">무슨 일이 불편한가요?<span class="req">꼭 써요</span></label>
+        <textarea id="f-problem" data-f="problemDescription" rows="3" maxlength="1000" placeholder="예: 비 오는 날 우산에서 떨어진 물 때문에 바닥이 미끄러워요">${esc(P.problemDescription)}</textarea></div>
+      <div class="field"><label for="f-situ">어떤 상황에서 일어나나요?</label>
+        <textarea id="f-situ" data-f="situationDescription" rows="2" maxlength="1000" placeholder="예: 아침 등교 시간, 많은 학생이 한꺼번에 들어올 때">${esc(P.situationDescription)}</textarea></div>
+      <fieldset style="border:0;padding:0;margin:0"><legend class="label">문제 종류 <span class="hint">하나 골라도 되고 안 골라도 돼요</span></legend>
+        <div class="chips">${PROBLEM_TYPES.map(t => `<button class="chip" data-act="setType" data-v="${t}" aria-pressed="${P.problemType === t}">${t}</button>`).join('')}</div></fieldset>
+    </section>
+    <div><button class="btn primary" data-act="next">이 문제를 해결할래요 →</button></div>
+  </div>`;
+}
+function needFirst(n, msg) {
+  return `<div class="note warn"><b aria-hidden="true">!</b><div><p>${esc(msg)}</p><button class="btn sm" data-act="goto" data-n="${n}" style="margin-top:.5rem">${n}단계로 가기</button></div></div>`;
+}
+
+/* ---------- 3단계: 원인과 사용자 분석 ---------- */
+function step3() {
+  if (!P.problemStatementEdited) P.problemStatement = buildStatement(P);
+  const customUsers = P.targetUsers.filter(u => !USER_CHOICES.includes(u));
+  const customCons = P.designConstraints.filter(c => !CONSTRAINTS.includes(c));
+  return `<div class="stack">
+    ${filled(P.problemDescription) ? `<div class="problem-box"><small>내가 고른 문제 · ${esc(P.locationId ? PLACE[P.locationId].name : '')}</small>${esc(P.problemDescription)}</div>` : needFirst(2, '2단계에서 불편한 일을 먼저 써 주세요.')}
+    <section class="card stack" aria-labelledby="q1">
+      <h2 id="q1" style="font-size:1.1rem"><span class="q-num">1</span>이 문제를 주로 겪는 사람은 누구인가요?<span class="req">꼭 골라요</span></h2>
+      <p class="hint">누가 가장 불편할까요? 여러 명을 골라도 돼요.</p>
+      <div class="chips">${USER_CHOICES.map(u => `<button class="chip" data-act="toggleUser" data-v="${u}" aria-pressed="${P.targetUsers.includes(u)}">${u}</button>`).join('')}
+        ${customUsers.map(u => `<button class="chip" data-act="toggleUser" data-v="${esc(u)}" aria-pressed="true" aria-label="${esc(u)} 빼기">${esc(u)}<span class="x" aria-hidden="true">×</span></button>`).join('')}</div>
+      <div class="add-row"><input type="text" id="add-targetUsers" data-enter="addItem" data-key="targetUsers" placeholder="직접 쓰기 (예: 상인, 휠체어를 탄 사람)" aria-label="이 문제를 겪는 사람 직접 쓰기" maxlength="40"><button class="btn" data-act="addItem" data-key="targetUsers">추가</button></div>
+    </section>
+    <section class="card stack"><div class="field"><label for="f-when"><span class="q-num">2</span>언제, 어떤 상황에서 불편한가요?</label>
+      <textarea id="f-when" data-f="whenWhere" rows="2" maxlength="1000" placeholder="예: 비가 많이 오는 날 아침, 우산을 접어 들고 들어올 때">${esc(P.whenWhere)}</textarea></div></section>
+    <section class="card stack" aria-labelledby="q3">
+      <h2 id="q3" style="font-size:1.1rem"><span class="q-num">3</span>불편한 일이 생기는 까닭은 무엇인가요?<span class="req">1개 이상</span></h2>
+      <div class="helper" aria-label="생각 도우미"><span>물건이 없어서일까?</span><span>사용하기 어려워서일까?</span><span>날씨나 장소 때문일까?</span></div>
+      ${listEditor('rootCauses', '원인', '예: 우산에 남은 빗물', P.rootCauses)}
+    </section>
+    <section class="card stack" aria-labelledby="q4">
+      <h2 id="q4" style="font-size:1.1rem"><span class="q-num">4</span>문제를 해결하려면 어떤 기능이 필요할까요?<span class="req">1개 이상</span></h2>
+      ${listEditor('neededFunctions', '필요한 기능', '예: 물을 모으기', P.neededFunctions)}
+    </section>
+    <section class="card stack" aria-labelledby="q5">
+      <h2 id="q5" style="font-size:1.1rem"><span class="q-num">5</span>해결할 때 꼭 지켜야 할 조건은 무엇인가요?</h2>
+      <div class="chips">${CONSTRAINTS.map(c => `<button class="chip" data-act="toggleConstraint" data-v="${c}" aria-pressed="${P.designConstraints.includes(c)}">${c}</button>`).join('')}
+        ${customCons.map(c => `<button class="chip" data-act="toggleConstraint" data-v="${esc(c)}" aria-pressed="true" aria-label="${esc(c)} 빼기">${esc(c)}<span class="x" aria-hidden="true">×</span></button>`).join('')}</div>
+      <div class="add-row"><input type="text" id="add-designConstraints" data-enter="addItem" data-key="designConstraints" placeholder="다른 조건 직접 쓰기 (예: 가볍게)" aria-label="지켜야 할 조건 직접 쓰기" maxlength="40"><button class="btn" data-act="addItem" data-key="designConstraints">추가</button></div>
+    </section>
+    <section class="statement stack" aria-labelledby="st-h">
+      <h2 id="st-h" style="font-size:1.15rem;color:var(--navy)">한 문장으로 정리하기</h2>
+      <p class="hint">위에 쓴 내용으로 문장이 저절로 만들어져요. 어색하면 자유롭게 고쳐 써요.</p>
+      <textarea id="f-statement" data-f="problemStatement" rows="3" maxlength="600" aria-label="문제 정리 문장">${esc(P.problemStatement)}</textarea>
+      <div class="row-btns"><button class="btn sm" data-act="rebuildStatement">${P.problemStatementEdited ? '위 내용으로 문장 다시 만들기' : '문장이 자동으로 바뀌고 있어요'}</button></div>
+    </section>
+  </div>`;
+}
+
+/* ---------- 4단계: 발명 아이디어 펼치기 ---------- */
+function step4() {
+  const n = P.ideas.filter(i => filled(i.title)).length;
+  const mcard = (m) => {
+    const M = METHODS[m];
+    return `<section class="card method" aria-labelledby="m-${m}">
+      <div class="method-head"><span class="method-sym" aria-hidden="true">${M.sym}</span><h2 id="m-${m}">${M.label}</h2></div>
+      <p>${M.desc}</p>
+      <label for="d-${m}-t" class="hint" style="font-weight:700;color:var(--ink)">이 방법을 이용하면 어떤 발명품을 만들 수 있을까요?</label>
+      <input type="text" id="d-${m}-t" data-draft="${m}-t" value="${esc(drafts[m + '-t'] || '')}" maxlength="120" placeholder="발명 아이디어 이름이나 짧은 설명">
+      <label for="d-${m}-d" class="hint">어떤 문제를 해결하나요?</label>
+      <textarea id="d-${m}-d" data-draft="${m}-d" rows="2" maxlength="600">${esc(drafts[m + '-d'] || '')}</textarea>
+      <div><button class="btn" data-act="addIdea" data-m="${m}">아이디어 카드로 만들기</button></div></section>`;
+  };
+  const ideas = P.ideas.map((it, i) => `<article class="card idea" aria-label="아이디어 ${i + 1}">
+      <div class="idea-top"><select data-idea="${it.id}" data-f="method" aria-label="아이디어 ${i + 1}의 발명 방법">${Object.entries(METHODS).map(([k, M]) => `<option value="${k}" ${it.method === k ? 'selected' : ''}>${M.sym} ${M.label}</option>`).join('')}</select>
+        <input type="text" data-idea="${it.id}" data-f="title" value="${esc(it.title)}" maxlength="120" aria-label="아이디어 ${i + 1} 이름">
+        <button class="icon-btn" data-act="deleteIdea" data-id="${it.id}" aria-label="아이디어 ${i + 1} 지우기">${ICONS.trash}</button></div>
+      <textarea data-idea="${it.id}" data-f="description" rows="2" maxlength="600" aria-label="아이디어 ${i + 1}: 어떤 문제를 해결하나요?" placeholder="어떤 문제를 해결하나요?">${esc(it.description)}</textarea></article>`).join('');
+  return `<div class="stack">
+    <div class="problem-box"><small>해결할 문제</small>${esc(statementOf(P))}</div>
+    <div class="method-grid">${['add', 'remove', 'change', 'combine'].map(mcard).join('')}</div>
+    <details class="card"><summary style="cursor:pointer;font-weight:700;min-height:32px">💡 방법에 얽매이지 않은 아이디어 추가하기</summary><div style="margin-top:.8rem">${mcard('free').replace('class="card method"', 'class="method"')}</div></details>
+    <section class="stack" aria-labelledby="ideas-h">
+      <h2 id="ideas-h" style="font-size:1.35rem;color:var(--navy)">내 아이디어 카드 <span class="count-pill ${n >= 2 ? 'ok' : ''}">${n}개${n >= 2 ? ' ✓' : ' · 2개 이상 만들어요'}</span></h2>
+      <p class="hint">카드는 언제든 고치거나 지울 수 있어요. 4가지 방법을 모두 쓰지 않아도 괜찮아요.</p>
+      ${ideas ? `<div class="idea-list">${ideas}</div>` : `<p class="empty-list">아직 아이디어 카드가 없어요. 위의 방법 카드 중 하나를 골라 써 보세요.</p>`}
+    </section></div>`;
+}
+
+/* ---------- 5단계: 최종 아이디어 선정 ---------- */
+function step5() {
+  if (!P.ideas.length) return needFirst(4, '4단계에서 아이디어 카드를 먼저 만들어 주세요.');
+  const cards = P.ideas.map((it, i) => {
+    const ev = it.evaluation || {}; const chosen = P.selectedIdeaId === it.id;
+    const cnt = (v) => EVAL_CRITERIA.filter(c => ev[c.k] === v).length;
+    return `<article class="card cmp ${chosen ? 'chosen' : ''}" aria-label="아이디어 ${i + 1} 비교">
+      <div class="cmp-title"><span class="mtag">${METHODS[it.method].sym} ${METHODS[it.method].label}</span><h3>${filled(it.title) ? esc(it.title) : '(이름 없는 아이디어)'}</h3></div>
+      ${filled(it.description) ? `<p class="muted" style="font-size:.93rem">${nl(it.description)}</p>` : ''}
+      ${EVAL_CRITERIA.map(c => `<div class="crit"><p>${c.q}</p>${seg(EVAL_OPTS, ev[c.k], `data-act="rateIdea" data-id="${it.id}" data-k="${c.k}"`, c.q)}</div>`).join('')}
+      <p class="tally">좋음 ${cnt('good')} · 보통 ${cnt('okay')} · 더 생각 ${cnt('retry')}</p>
+      <button class="btn choose" data-act="selectIdea" data-id="${it.id}" aria-pressed="${chosen}">${chosen ? '✓ 이 아이디어로 정했어요' : '이 아이디어로 정할래요'}</button></article>`;
+  }).join('');
+  const sel = selectedIdea(P);
+  return `<div class="stack">
+    <div class="note"><b aria-hidden="true">i</b><p>좋음이 가장 많다고 정답은 아니에요. 견주어 본 다음, 마지막 선택은 여러분이 직접 해요.</p></div>
+    <div class="cmp-grid">${cards}</div>
+    <section class="card stack" aria-labelledby="pick-h">
+      <h2 id="pick-h">고른 아이디어 정리하기</h2>
+      ${sel ? `<div class="problem-box"><small>최종 아이디어</small>${esc(sel.title || '(이름 없는 아이디어)')}</div>` : `<p class="muted">위 카드에서 '이 아이디어로 정할래요'를 눌러 하나를 골라요.</p>`}
+      <div class="field"><label for="f-reason">이 아이디어를 선택한 이유<span class="req">꼭 써요</span></label>
+        <textarea id="f-reason" data-f="selectionReason" rows="3" maxlength="1000" placeholder="예: 교실 재료로 만들 수 있고, 미끄러운 바닥 문제를 바로 해결할 수 있어서">${esc(P.selectionReason)}</textarea></div>
+      <div class="field"><label for="f-name5">발명품 이름 <span class="hint">임시로 정해도 돼요. 나중에 바꿀 수 있어요.</span></label>
+        <input type="text" id="f-name5" data-f="inventionName" value="${esc(P.inventionName)}" maxlength="60"></div>
+      <div class="field"><span class="label">가장 중요한 기능 1~3가지</span>
+        <ul class="list">${[0, 1, 2].map(i => `<li><span class="num" aria-hidden="true">${i + 1}</span><input type="text" data-f="coreFunctions" data-i="${i}" value="${esc(P.coreFunctions[i])}" maxlength="120" aria-label="중요한 기능 ${i + 1}"></li>`).join('')}</ul></div>
+    </section>
+    <section class="wrap-box" aria-labelledby="wrap-h">
+      <h2 id="wrap-h">1~2차시 마무리</h2>
+      <p>오늘 쓴 내용은 <b>이 기기에 자동으로 저장</b>됐어요. 다음 시간에 같은 기기로 이 앱을 열고 <b>'저장한 활동 이어하기'</b>를 누르면 이어서 할 수 있어요.</p>
+      <div class="row-btns"><button class="btn" data-act="previewFirst">1~2차시 발명 제안서 미리 보기</button><button class="btn primary" data-act="continueLater">다음 시간에 이어하기</button></div>
+    </section></div>`;
+}
+
+/* ---------- 6단계: 설계와 제작 기록 ---------- */
+const SK = { tool: 'pen', size: 1, color: '#1b2433', undo: [], img: null, pid: null };
+const SIZES = [{ w: 3, l: '가늘게' }, { w: 7, l: '보통' }, { w: 14, l: '굵게' }];
+const COLORS = [{ v: '#1b2433', l: '검정' }, { v: '#1f5fbf', l: '파랑' }, { v: '#c0392b', l: '빨강' }];
+function step6() {
+  const custom = P.materials.filter(m => !MATERIALS.includes(m));
+  return `<div class="stack">
+    <div class="tip">${ICONS.hand}<p>이 앱은 기록하는 도구예요. 실제 모형은 종이·골판지·테이프 같은 교실 재료로 직접 만들어요. 앞부분은 <b>만들기 전</b>에, 마지막 칸은 <b>만든 뒤</b>에 써요.</p></div>
+    <section class="card stack" aria-labelledby="d1">
+      <h2 id="d1">설계하기</h2>
+      <div class="field"><label for="f-name">발명품 이름<span class="req">꼭 써요</span></label><input type="text" id="f-name" data-f="inventionName" value="${esc(P.inventionName)}" maxlength="60"></div>
+      <div class="field"><span class="label">해결하려는 문제 <button class="link" data-act="goto" data-n="3">고치기</button></span><div class="problem-box">${esc(statementOf(P))}</div></div>
+      <div class="field"><span class="label">주요 기능 1~3가지</span>
+        <ul class="list">${[0, 1, 2].map(i => `<li><span class="num" aria-hidden="true">${i + 1}</span><input type="text" data-f="coreFunctions" data-i="${i}" value="${esc(P.coreFunctions[i])}" maxlength="120" aria-label="주요 기능 ${i + 1}"></li>`).join('')}</ul></div>
+      <div class="field"><span class="label">작동·사용 방법 <span class="hint">순서대로 써요</span></span>
+        <ul class="list">${P.usageSteps.map((s, i) => `<li><span class="num" aria-hidden="true">${i + 1}</span><input type="text" data-f="usageSteps" data-i="${i}" value="${esc(s)}" maxlength="200" aria-label="사용 방법 ${i + 1}단계" placeholder="${i === 0 ? '예: 젖은 우산을 꽂는다' : ''}">
+          <button class="icon-btn" data-act="removeItem" data-key="usageSteps" data-i="${i}" aria-label="사용 방법 ${i + 1}단계 지우기" ${P.usageSteps.length <= 1 ? 'disabled' : ''}>${ICONS.trash}</button></li>`).join('')}</ul>
+        <div><button class="btn sm" data-act="addStep" style="margin-top:.5rem">순서 하나 더</button></div></div>
+      <div class="field"><span class="label">준비할 재료<span class="req">1개 이상</span></span>
+        <div class="chips">${MATERIALS.map(m => `<button class="chip" data-act="toggleMaterial" data-v="${m}" aria-pressed="${P.materials.includes(m)}">${m}</button>`).join('')}
+          ${custom.map(m => `<button class="chip" data-act="toggleMaterial" data-v="${esc(m)}" aria-pressed="true" aria-label="${esc(m)} 빼기">${esc(m)}<span class="x" aria-hidden="true">×</span></button>`).join('')}</div>
+        <div class="add-row" style="margin-top:.5rem"><input type="text" id="add-materials" data-enter="addItem" data-key="materials" placeholder="다른 재료 직접 쓰기" aria-label="다른 재료 직접 쓰기" maxlength="40"><button class="btn" data-act="addItem" data-key="materials">추가</button></div></div>
+    </section>
+    <section class="card stack" aria-labelledby="d2">
+      <h2 id="d2">발명 설계도 그리기</h2>
+      <div class="toolbar" role="toolbar" aria-label="그리기 도구">
+        <div class="tgroup"><span class="tl">도구</span>
+          <button class="tbtn" data-act="setTool" data-v="pen" aria-pressed="${SK.tool === 'pen'}">✏️ 연필</button>
+          <button class="tbtn" data-act="setTool" data-v="eraser" aria-pressed="${SK.tool === 'eraser'}">🧽 지우개</button></div>
+        <div class="tgroup"><span class="tl">굵기</span>${SIZES.map((s, i) => `<button class="tbtn" data-act="setSize" data-v="${i}" aria-pressed="${SK.size === i}"><span class="lw" style="height:${[2, 4, 7][i]}px" aria-hidden="true"></span>${s.l}</button>`).join('')}</div>
+        <div class="tgroup"><span class="tl">색</span>${COLORS.map(c => `<button class="tbtn" data-act="setColor" data-v="${c.v}" aria-pressed="${SK.color === c.v}"><span class="sw" style="background:${c.v}" aria-hidden="true"></span>${c.l}</button>`).join('')}</div>
+        <div class="tgroup"><button class="tbtn" data-act="undo" id="btn-undo">↶ 되돌리기</button><button class="tbtn" data-act="clearCanvas">전체 지우기</button></div>
+      </div>
+      <div class="canvas-wrap"><canvas id="sketch" width="1000" height="625" aria-label="발명 설계도를 그리는 칸. 손가락, 마우스, 펜으로 그릴 수 있어요. 그리기가 어려우면 아래 글 설명 칸을 쓰세요."></canvas></div>
+      <p class="canvas-state" id="canvas-state" aria-live="polite">${P.designSketchDataUrl ? '그림이 저장되어 있어요.' : '아직 그린 그림이 없어요.'}</p>
+      <div class="field"><label for="f-dtext">그림으로 표현하기 어려우면 글로 설명해도 돼요</label>
+        <textarea id="f-dtext" data-f="designText" rows="4" maxlength="2000" placeholder="예: 우산꽂이 아래에 물받이 통을 달고, 통 옆에 손잡이를 붙여 물을 쉽게 버릴 수 있게 한다.">${esc(P.designText)}</textarea></div>
+    </section>
+    <section class="card stack" aria-labelledby="d3">
+      <h2 id="d3">제작 기록 <span class="hint" style="display:inline;font-family:var(--f-body)">모형을 만든 뒤에 써요</span></h2>
+      <div class="field"><label for="f-build">제작하며 달라진 점 또는 어려웠던 점</label>
+        <textarea id="f-build" data-f="buildNotes" rows="3" maxlength="2000" placeholder="예: 골판지가 물에 젖어서 바닥에 비닐을 덧붙였다.">${esc(P.buildNotes)}</textarea></div>
+    </section></div>`;
+}
+function initCanvas() {
+  const c = $('#sketch'); if (!c || !c.getContext) return;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  if (SK.pid !== P.id) { SK.pid = P.id; SK.undo = []; SK.img = null; }
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+  if (SK.img) ctx.putImageData(SK.img, 0, 0);
+  else if (P.designSketchDataUrl) {
+    const im = new Image();
+    im.onload = () => { ctx.drawImage(im, 0, 0, c.width, c.height); SK.img = ctx.getImageData(0, 0, c.width, c.height); };
+    im.src = P.designSketchDataUrl;
+  }
+  paintUndo();
+  let drawing = false, last = null, pointer = null;
+  const pos = (e) => { const r = c.getBoundingClientRect(); return { x: (e.clientX - r.left) * c.width / r.width, y: (e.clientY - r.top) * c.height / r.height }; };
+  const style = () => {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = ctx.fillStyle = SK.tool === 'eraser' ? '#ffffff' : SK.color;
+    ctx.lineWidth = SIZES[SK.size].w * (SK.tool === 'eraser' ? 3 : 1);
+  };
+  c.addEventListener('pointerdown', (e) => {
+    if (e.button > 0 || drawing) return;
+    e.preventDefault(); drawing = true; pointer = e.pointerId;
+    try { c.setPointerCapture(pointer); } catch (err) { /* 무시 */ }
+    SK.undo.push(ctx.getImageData(0, 0, c.width, c.height)); if (SK.undo.length > 25) SK.undo.shift();
+    last = pos(e); style(); ctx.beginPath(); ctx.arc(last.x, last.y, ctx.lineWidth / 2, 0, Math.PI * 2); ctx.fill();
+  });
+  c.addEventListener('pointermove', (e) => {
+    if (!drawing || e.pointerId !== pointer) return;
+    e.preventDefault(); style();
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    for (const ev of (evs.length ? evs : [e])) { const p = pos(ev); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; }
+  });
+  const end = (e) => { if (!drawing || e.pointerId !== pointer) return; drawing = false; commitCanvas(); };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+}
+function isBlank(img) { const d = img.data; for (let i = 0; i < d.length; i += 16) if (d[i] < 250 || d[i + 1] < 250 || d[i + 2] < 250) return false; return true; }
+function commitCanvas() {
+  const c = $('#sketch'); if (!c) return; const ctx = c.getContext('2d');
+  SK.img = ctx.getImageData(0, 0, c.width, c.height);
+  P.designSketchDataUrl = isBlank(SK.img) ? null : c.toDataURL('image/png');
+  touch(); paintUndo(); refreshSide();
+  const st = $('#canvas-state'); if (st) st.textContent = P.designSketchDataUrl ? '그림이 저장되었어요.' : '아직 그린 그림이 없어요.';
+}
+function paintUndo() { const b = $('#btn-undo'); if (b) b.disabled = !SK.undo.length; }
+
+/* ---------- 7단계: 시험·피드백·개선 ---------- */
+function compareHTML() {
+  const sel = selectedIdea(P);
+  const plan = sel ? `${esc(sel.title)}${filled(sel.description) ? `<br><span class="muted">${nl(sel.description)}</span>` : ''}` : filled(P.inventionName) ? esc(P.inventionName) : '<span class="muted">아직 정하지 않았어요</span>';
+  const v = (s, e) => (filled(s) ? nl(s) : `<span class="muted">${e}</span>`);
+  return `<div class="cmp-cell"><small>처음 계획</small>${plan}</div><div class="cmp-arrow" aria-hidden="true">→</div>
+    <div class="cmp-cell"><small>바꾼 점</small>${v(P.changesMade, '아래 \'어떻게 바꾸었나요?\'에 쓰면 나타나요')}</div><div class="cmp-arrow" aria-hidden="true">→</div>
+    <div class="cmp-cell"><small>좋아진 점</small>${v(P.afterTestNotes, '아래 \'수정 후 결과\'에 쓰면 나타나요')}</div>`;
+}
+function step7() {
+  const tested = P.testStatus === 'tested', notTested = P.testStatus === 'not_tested';
+  return `<div class="stack">
+    <section class="card stack" aria-labelledby="t0"><h2 id="t0">모형을 시험해 봤나요?</h2>
+      <div class="status-pick">
+        <button data-act="setTestStatus" data-v="tested" aria-pressed="${tested}"><b>${tested ? '✓ ' : ''}시험해 봤어요</b><span>시험한 방법과 결과를 기록해요.</span></button>
+        <button data-act="setTestStatus" data-v="not_tested" aria-pressed="${notTested}"><b>${notTested ? '✓ ' : ''}아직 시험하지 못했어요</b><span>보고서에 '시험 미실시'로 정확히 적혀요.</span></button>
+      </div>
+      ${notTested ? `<div class="note"><b aria-hidden="true">i</b><p>괜찮아요. 결과를 지어내지 말고, 시험한 뒤에 다시 와서 고치면 돼요. 친구 의견과 고칠 계획은 지금 써도 좋아요.</p></div>` : ''}
+    </section>
+    ${tested ? `<section class="card stack" aria-labelledby="t1"><h2 id="t1">시험 결과</h2>
+      <div class="field"><label for="f-tmethod">어떻게 시험했나요?<span class="req">꼭 써요</span></label>
+        <textarea id="f-tmethod" data-f="testMethod" rows="2" maxlength="1000" placeholder="예: 물을 부어 보기, 버튼 누르기, 물건 올려 보기">${esc(P.testMethod)}</textarea></div>
+      <div class="test-grid">${P.testResults.map((r, i) => `<div class="test-card"><p>${esc(r.criterion)}</p>
+        ${seg(TEST_OPTS, r.outcome, `data-act="setOutcome" data-i="${i}"`, r.criterion)}
+        <input type="text" data-tr="${i}" data-f="note" value="${esc(r.note)}" maxlength="300" placeholder="짧은 메모" aria-label="${esc(r.criterion)} 메모"></div>`).join('')}</div>
+    </section>` : ''}
+    <section class="card stack" aria-labelledby="t2"><h2 id="t2">의견과 개선</h2>
+      <div class="field"><label for="f-peer">친구에게 받은 의견</label><textarea id="f-peer" data-f="peerFeedback" rows="2" maxlength="1000" placeholder="예: 손잡이가 있으면 옮기기 쉬울 것 같아.">${esc(P.peerFeedback)}</textarea></div>
+      <div class="field"><label for="f-plan">수정할 부분</label><textarea id="f-plan" data-f="plannedChanges" rows="2" maxlength="1000">${esc(P.plannedChanges)}</textarea></div>
+      <div class="field"><label for="f-changed">어떻게 바꾸었나요?</label><textarea id="f-changed" data-f="changesMade" rows="2" maxlength="1000">${esc(P.changesMade)}</textarea></div>
+      <div class="field"><label for="f-after">수정 후 결과</label><textarea id="f-after" data-f="afterTestNotes" rows="2" maxlength="1000" placeholder="${notTested ? '시험을 하지 않았다면 비워 두세요' : '예: 물이 바닥에 떨어지지 않았다.'}">${esc(P.afterTestNotes)}</textarea></div>
+    </section>
+    <section aria-labelledby="t3" class="stack"><h2 id="t3" style="font-size:1.25rem;color:var(--navy)">처음과 지금 견주어 보기</h2><div class="compare" id="compare">${compareHTML()}</div></section>
+  </div>`;
+}
+
+/* ---------- 8단계: 발명 박람회 + 보고서 ---------- */
+function step8() {
+  const name = filled(P.inventionName) ? esc(P.inventionName) : '발명품 이름을 정해 주세요';
+  return `<div class="stack">
+    <section class="fair-hero no-present no-print" aria-labelledby="hero-name">
+      <p class="kicker">우리 동네 발명 박람회</p>
+      <p class="fair-name" id="hero-name">${name}</p>
+      <div class="field"><label for="f-one">한 줄 소개</label><input type="text" id="f-one" data-f="oneLiner" value="${esc(P.oneLiner)}" maxlength="100" placeholder="예: 비 오는 날 학교 현관 바닥을 지켜 주는 물받이 우산꽂이"></div>
+      <div class="two">
+        <div class="field"><label for="f-team">모둠 이름 <span class="hint">선택</span></label><input type="text" id="f-team" data-f="teamName" value="${esc(P.teamName)}" maxlength="30"></div>
+        <div class="field"><label for="f-nick">발명가 별명 <span class="hint">선택</span></label><input type="text" id="f-nick" data-f="nickname" value="${esc(P.nickname)}" maxlength="30"></div>
+      </div>
+      <div class="field"><label for="f-impact">이 발명으로 우리 동네가 어떻게 달라질까요?</label><textarea id="f-impact" data-f="neighborhoodImpact" rows="3" maxlength="1500">${esc(P.neighborhoodImpact)}</textarea></div>
+      <div class="fair-actions no-print">
+        ${EMBEDDED ? '' : '<button class="btn primary" data-act="print">발명 보고서 인쇄하기</button>'}
+        <button class="btn" data-act="download">${EMBEDDED ? '활동 기록 복사하기' : '활동 파일 저장하기(JSON)'}</button>
+        <button class="btn" data-act="present">발표 화면으로 보기</button>
+        <button class="btn" data-act="editAgain">다시 수정하기</button>
+        <button class="btn ghost" data-act="newInvention">새 발명 시작하기</button>
+      </div>
+      <p class="fine no-print">${EMBEDDED
+        ? '지금은 미리 보기 창이라 인쇄와 파일 내려받기가 막혀 있어요. 이 앱의 HTML 파일을 크롬·엣지 같은 브라우저에서 직접 열면 인쇄와 PDF 저장을 할 수 있어요.'
+        : 'PDF로 저장하려면 \'발명 보고서 인쇄하기\'를 누른 뒤 프린터를 \'PDF로 저장\'으로 바꾸세요. 종이는 A4 세로가 알맞아요.'}</p>
+    </section>
+    <div class="report-wrap" id="report">${reportHTML(P, 'all')}</div>
+  </div>`;
+}
+function reportHTML(p, part) {
+  const v = (s) => (filled(s) ? nl(s) : '<span class="empty">작성하지 않음</span>');
+  const lst = (a, ordered) => { const f = a.filter(filled); return f.length ? `<${ordered ? 'ol' : 'ul'} class="r-list">${f.map(x => `<li>${esc(x)}</li>`).join('')}</${ordered ? 'ol' : 'ul'}>` : '<span class="empty">작성하지 않음</span>'; };
+  const loc = p.locationId ? PLACE[p.locationId] : null;
+  const scen = p.selectedScenarioId === 'custom' ? '직접 발견한 문제' : p.selectedScenarioId ? '상황 카드에서 고른 문제' : '';
+  const sel = selectedIdea(p);
+  const evl = (x) => (x ? EVAL_OPTS.find(o => o.v === x).mk + ' ' + EVAL_OPTS.find(o => o.v === x).l : '-');
+  const ideasTable = p.ideas.length ? `<table class="r-table"><thead><tr><th scope="col">방법</th><th scope="col">아이디어</th>${EVAL_CRITERIA.map(c => `<th scope="col">${c.q.replace('?', '')}</th>`).join('')}<th scope="col">선정</th></tr></thead><tbody>
+    ${p.ideas.map(it => `<tr><td>${METHODS[it.method].label}</td><td><b>${esc(it.title) || '(이름 없음)'}</b>${filled(it.description) ? `<br>${nl(it.description)}` : ''}</td>${EVAL_CRITERIA.map(c => `<td>${evl((it.evaluation || {})[c.k])}</td>`).join('')}<td class="sel">${it.id === p.selectedIdeaId ? '✓ 최종' : ''}</td></tr>`).join('')}</tbody></table>` : '<span class="empty">작성하지 않음</span>';
+  const meta = `<dl class="r-meta">${filled(p.teamName) ? `<div><dt>모둠</dt><dd>${esc(p.teamName)}</dd></div>` : ''}${filled(p.nickname) ? `<div><dt>발명가</dt><dd>${esc(p.nickname)}</dd></div>` : ''}<div><dt>작성일</dt><dd>${krDate(p.updatedAt)}</dd></div><div><dt>지도</dt><dd>${esc(town())} (수업용 가상 마을)</dd></div></dl>`;
+  const page1 = `<div class="sheet">
+    <header class="r-head"><p class="r-kicker">우리 동네를 바꾸는 발명 제안서${part === 'first' ? ' · 1~2차시 초안' : ''}</p>
+      <h2 class="r-title"><span class="sr">1. 우리 모둠 및 발명품 이름: </span>${filled(p.inventionName) ? esc(p.inventionName) : '<span class="empty">발명품 이름 작성하지 않음</span>'}</h2>
+      ${filled(p.oneLiner) ? `<p class="r-one">${esc(p.oneLiner)}</p>` : ''}${meta}</header>
+    <section class="r-sec"><h3><span>2.</span>선택한 장소와 지도 표시</h3>
+      <div class="r-map">${mapSVG(p.locationId)}<div>${loc ? `<b>${esc(loc.name)}</b><br>${esc(loc.desc)}<br><span style="color:var(--paper-muted)">자주 오는 사람: ${esc(loc.users)}</span>` : '<span class="empty">장소를 고르지 않음</span>'}</div></div></section>
+    <section class="r-sec"><h3><span>3.</span>발견한 불편함과 영향을 받는 사용자</h3>
+      <dl class="r-grid"><dt>발견한 문제</dt><dd>${v(p.problemDescription)}${scen ? ` <span style="color:var(--paper-muted)">(${scen})</span>` : ''}</dd>
+        <dt>일어나는 상황</dt><dd>${v(p.situationDescription)}</dd>
+        <dt>언제·어떤 상황</dt><dd>${v(p.whenWhere)}</dd>
+        <dt>문제 종류</dt><dd>${v(p.problemType)}</dd>
+        <dt>불편한 사람</dt><dd>${p.targetUsers.length ? esc(p.targetUsers.join(', ')) : '<span class="empty">작성하지 않음</span>'}</dd></dl></section>
+    <section class="r-sec"><h3><span>4.</span>문제의 원인과 필요한 기능</h3>
+      <dl class="r-grid"><dt>원인</dt><dd>${lst(p.rootCauses)}</dd><dt>필요한 기능</dt><dd>${lst(p.neededFunctions)}</dd>
+        <dt>지킬 조건</dt><dd>${p.designConstraints.length ? esc(p.designConstraints.join(', ')) : '<span class="empty">작성하지 않음</span>'}</dd></dl>
+      <p class="r-box"><b>문제 정리:</b> ${esc(statementOf(p))}</p></section>
+    <section class="r-sec long"><h3><span>5.</span>생각한 아이디어들과 최종 선정 이유</h3>${ideasTable}
+      <dl class="r-grid"><dt>최종 아이디어</dt><dd>${sel ? `<b>${esc(sel.title)}</b>` : '<span class="empty">고르지 않음</span>'}</dd><dt>선정 이유</dt><dd>${v(p.selectionReason)}</dd>
+      ${part === 'first' ? `<dt>중요한 기능</dt><dd>${lst(p.coreFunctions, true)}</dd>` : ''}</dl></section>
+  </div>`;
+  if (part === 'first') return `<article class="paper">${page1}</article>`;
+  const testBlock = p.testStatus === 'tested'
+    ? `<dl class="r-grid"><dt>시험 방법</dt><dd>${v(p.testMethod)}</dd></dl>
+       <table class="r-table"><thead><tr><th scope="col">시험 기준</th><th scope="col">결과</th><th scope="col">메모</th></tr></thead><tbody>${p.testResults.map(r => {
+        const o = TEST_OPTS.find(x => x.v === r.outcome);
+        return `<tr><td>${esc(r.criterion)}</td><td>${o ? `${o.mk} ${o.l}` : '<span class="empty">기록 없음</span>'}</td><td>${filled(r.note) ? esc(r.note) : ''}</td></tr>`;
+      }).join('')}</tbody></table>`
+    : `<p><span class="r-flag">시험 미실시</span> 아직 모형을 시험하지 않았어요. 시험 결과는 적지 않았어요.</p>`;
+  const page2 = `<div class="sheet">
+    <section class="r-sec"><h3><span>6.</span>최종 발명품의 핵심 기능과 사용 방법</h3>
+      <dl class="r-grid"><dt>핵심 기능</dt><dd>${lst(p.coreFunctions, true)}</dd><dt>사용 방법</dt><dd>${lst(p.usageSteps, true)}</dd></dl></section>
+    <section class="r-sec"><h3><span>7.</span>설계도</h3>
+      ${p.designSketchDataUrl ? `<img class="r-sketch" src="${p.designSketchDataUrl}" alt="${esc(p.inventionName || '발명품')} 설계도 그림">` : ''}
+      ${filled(p.designText) ? `<p class="r-box"><b>글 설명:</b> ${nl(p.designText)}</p>` : p.designSketchDataUrl ? '' : '<span class="empty">설계도 그림과 글 설명을 작성하지 않음</span>'}</section>
+    <section class="r-sec"><h3><span>8.</span>사용 재료 및 제작 과정</h3>
+      <dl class="r-grid"><dt>재료</dt><dd>${p.materials.length ? esc(p.materials.join(', ')) : '<span class="empty">작성하지 않음</span>'}</dd><dt>제작 기록</dt><dd>${v(p.buildNotes)}</dd></dl></section>
+    <section class="r-sec long"><h3><span>9.</span>시험 결과, 친구 의견, 개선한 점</h3>${testBlock}
+      <dl class="r-grid"><dt>친구 의견</dt><dd>${v(p.peerFeedback)}</dd><dt>수정할 부분</dt><dd>${v(p.plannedChanges)}</dd><dt>바꾼 점</dt><dd>${v(p.changesMade)}</dd><dt>수정 후 결과</dt><dd>${v(p.afterTestNotes)}</dd></dl></section>
+    <section class="r-sec"><h3><span>10.</span>이 발명으로 우리 동네가 어떻게 달라질까요?</h3><p>${v(p.neighborhoodImpact)}</p></section>
+    <p class="r-foot">이 제안서는 수업을 위해 만든 가상의 ${esc(town())}을 바탕으로 작성했어요. · 우리 동네 발명 지도</p>
+  </div>`;
+  return `<article class="paper">${page1}${page2}</article>`;
+}
+
+/* =====================================================================
+   대화 상자 · 알림
+   ===================================================================== */
+const dlg = $('#dlg');
+function ask({ title, body = '', buttons = [{ label: '확인', value: 'ok', kind: 'primary' }], wide = false }) {
+  return new Promise(resolve => {
+    if (dlg.open) dlg.close('cancel');
+    dlg.className = 'dlg' + (wide ? ' wide' : '');
+    dlg.innerHTML = `<form method="dialog" class="dlg-in"><h2 class="dlg-title" id="dlg-title">${esc(title)}</h2><div class="dlg-body">${body}</div>
+      <div class="dlg-actions">${buttons.map(b => `<button class="btn ${b.kind || ''}" value="${esc(b.value)}" ${b.auto ? 'autofocus' : ''}>${esc(b.label)}</button>`).join('')}</div></form>`;
+    dlg.setAttribute('aria-labelledby', 'dlg-title');
+    dlg.returnValue = '';
+    const onClose = () => { dlg.removeEventListener('close', onClose); resolve(dlg.returnValue || 'cancel'); };
+    dlg.addEventListener('close', onClose);
+    dlg.showModal();
+  });
+}
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+/* ---------- 교사용 안내 ---------- */
+function teacherBody() {
+  const row = (t, s, a, w) => `<tr><td style="white-space:nowrap">${t}</td><td>${s}</td><td>${a}</td><td>${w}</td></tr>`;
+  return `<p><b>학습 주제</b> 우리 동네를 바꾸는 작은 발명가<br><b>학습 목표</b> 지역사회의 문제를 발견하고, 발명 사고 기법을 활용하여 문제를 해결할 수 있는 창의적인 발명품을 구상하고 제작할 수 있다.</p>
+    <h3 style="font-size:1rem">1~2차시 (80분) · 우리 동네의 문제를 발견하고, 해결할 발명 아이디어를 구상해 봅시다.</h3>
+    <div class="tbl-wrap"><table class="t-table"><thead><tr><th>시간</th><th>수업 단계</th><th>교실 활동</th><th>웹앱</th></tr></thead><tbody>
+      ${row('10분', '도입', '지역사회의 불편함 사진 관찰, 공부할 문제 확인', '시작 화면, 가상 지도 소개')}
+      ${row('20분', '[활동1] 우리 동네 문제 탐정 되기', '지도에서 문제를 찾아 장소·상황 기록', '1단계 동네 탐색 · 2단계 문제 발견')}
+      ${row('20분', '[활동2] 문제의 원인과 해결 조건 찾기', '불편함의 원인, 사용자, 필요한 기능 탐색', '3단계 원인과 사용자 분석')}
+      ${row('20분', '[활동3] 발명 아이디어 구상하기', '사고 기법으로 아이디어 여러 개 → 최종 선정', '4단계 아이디어 · 5단계 선정')}
+      ${row('10분', '정리', '모둠별 아이디어 소개, 다음 시간 제작 준비', '5단계 제안서 미리 보기 및 저장')}</tbody></table></div>
+    <h3 style="font-size:1rem">3~4차시 (80분) · 우리 동네의 문제를 해결하는 발명품을 제작하고 개선해 봅시다.</h3>
+    <div class="tbl-wrap"><table class="t-table"><thead><tr><th>시간</th><th>수업 단계</th><th>교실 활동</th><th>웹앱</th></tr></thead><tbody>
+      ${row('5분', '도입', '지난 차시 아이디어 확인', '저장한 활동 이어하기')}
+      ${row('15분', '[활동1] 발명품 설계하기', '설계도·재료·사용법 정리', '6단계 앞부분')}
+      ${row('30분', '[활동2] 발명품 제작하기', '교실 재료로 축소 모형 제작, 변화 기록', '6단계 제작 기록 + 실제 제작')}
+      ${row('20분', '[활동3] 더 나은 발명품으로 발전시키기', '시험, 친구 피드백, 수정·보완', '7단계 시험·개선')}
+      ${row('10분', '정리', '발명 박람회, 보고서 발표', '8단계 박람회·인쇄')}</tbody></table></div>
+    <p><b>교사 유의점</b> 아이디어의 독창성뿐 아니라 문제 해결의 적절성, 사용자의 편의, 실현 가능성을 함께 살펴봅니다. 완성도 경쟁보다 문제 발견과 반복 개선 과정을 강조합니다. 지도 속 상황은 수업용 예시이며, 학생이 실제 생활에서 겪은 문제를 직접 입력하도록 안내합니다. 앱 조작이 제작 시간을 줄이지 않도록 6~7단계는 짧게 기록하게 해 주세요.</p>
+    <p><b>저장 안내</b> 기록은 이 기기·이 브라우저에만 자동 저장됩니다(저장 칸 3개). 다른 기기와 자동으로 이어지지 않으니, 기기를 바꿀 때는 8단계나 5단계에서 활동 파일(JSON)을 저장했다가 처음 화면의 '활동 파일 불러오기'로 여세요. 브라우저 기록을 지우면 저장도 사라집니다. 로그인·실명·위치 정보는 받지 않습니다.</p>
+    <div class="field"><label for="t-town">우리 동네 이름 바꾸기 <span class="hint">지도와 보고서에 표시되는 가상 마을 이름이에요. 학생의 실제 주소는 쓰지 않게 해 주세요.</span></label>
+      <div class="add-row"><input type="text" id="t-town" maxlength="20" value="${esc(town())}"><button type="button" class="btn" data-act="renameTown">바꾸기</button></div></div>`;
+}
+
+/* =====================================================================
+   동작 (버튼 → 함수)
+   ===================================================================== */
+function go(n) {
+  if (!P) return;
+  P.currentStep = Math.min(8, Math.max(1, n)); touch();
+  render({ stepChanged: true });
+}
+function openProject(i) {
+  store.active = i; P = store.slots[i]; view = 'app'; SK.pid = null;
+  flushSave(); render({ stepChanged: true });
+}
+async function confirmOverwrite(i) {
+  const old = store.slots[i]; if (!old) return true;
+  const r = await ask({ title: `저장 칸 ${i + 1}의 기록을 지울까요?`, body: `<p>이 칸에는 <b>${esc([old.teamName, old.nickname].filter(filled).join(' · ') || '이름 없는 모둠')}</b>의 기록(${old.currentStep}/8 단계)이 있어요. 계속하면 그 기록이 사라지고 되돌릴 수 없어요.</p>`,
+    buttons: [{ label: '취소', value: 'cancel', auto: true }, { label: '지우고 새로 시작', value: 'ok', kind: 'danger' }] });
+  return r === 'ok';
+}
+function startIn(i) {
+  const team = ($('#s-team') || {}).value || ''; const nick = ($('#s-nick') || {}).value || '';
+  store.slots[i] = newProject(team.trim().slice(0, 30), nick.trim().slice(0, 30));
+  for (const k in drafts) delete drafts[k];
+  openProject(i);
+}
+function hasProblemData(p) { return !!(p.selectedScenarioId || filled(p.problemDescription) || p.targetUsers.length || p.rootCauses.length || p.neededFunctions.length); }
+function clearProblem(p, alsoProblem) {
+  if (alsoProblem) { p.selectedScenarioId = null; p.problemDescription = ''; p.situationDescription = ''; p.problemType = ''; }
+  p.targetUsers = []; p.whenWhere = ''; p.rootCauses = []; p.neededFunctions = []; p.designConstraints = []; p.problemStatement = ''; p.problemStatementEdited = false;
+}
+const LIST_KEYS = ['targetUsers', 'rootCauses', 'neededFunctions', 'designConstraints', 'materials', 'usageSteps'];
+
+const ACT = {
+  home() { flushSave(); view = 'start'; render({ stepChanged: true }); },
+  async teacher() { await ask({ title: '선생님 안내', body: teacherBody(), wide: true, buttons: [{ label: '닫기', value: 'ok', kind: 'primary' }] }); if (view === 'start') render(); },
+  renameTown() {
+    const v = ($('#t-town').value || '').trim().slice(0, 20);
+    store.settings.townName = v || '발명마을'; flushSave(); toast(`마을 이름을 '${town()}'(으)로 바꿨어요.`);
+    if (view === 'app') render();
+  },
+  async resetProject() {
+    const r = await ask({ title: '처음부터 다시 할까요?', body: '<p>지금 저장 칸의 기록(장소, 문제, 아이디어, 설계도, 시험 기록)이 모두 지워지고 되돌릴 수 없어요. 모둠 이름과 별명은 남아요.</p>',
+      buttons: [{ label: '취소', value: 'cancel', kind: 'primary', auto: true }, { label: '모두 지우고 다시 하기', value: 'ok', kind: 'danger' }] });
+    if (r !== 'ok') return;
+    store.slots[store.active] = newProject(P.teamName, P.nickname); for (const k in drafts) delete drafts[k];
+    openProject(store.active); toast('처음부터 다시 시작해요.');
+  },
+  async startNew() {
+    let i = store.slots.findIndex(s => !s);
+    if (i < 0) {
+      const r = await ask({ title: '저장 칸이 모두 찼어요', body: '<p>새 발명을 시작할 칸을 고르세요. 고른 칸의 기록은 지워져요.</p>',
+        buttons: [{ label: '취소', value: 'cancel', auto: true }, ...store.slots.map((s, k) => ({ label: `${k + 1}번 칸 (${[s.teamName, s.nickname].filter(filled).join(' · ') || '이름 없음'})`, value: String(k) }))] });
+      if (r === 'cancel') return; i = +r;
+      if (!(await confirmOverwrite(i))) return;
+    }
+    startIn(i);
+  },
+  async startInSlot(el) { const i = +el.dataset.i; if (await confirmOverwrite(i)) startIn(i); },
+  resume() { const i = latestSlot(); if (i >= 0) openProject(i); },
+  openSlot(el) { openProject(+el.dataset.i); },
+  async deleteSlot(el) {
+    const i = +el.dataset.i; const s = store.slots[i];
+    const r = await ask({ title: `저장 칸 ${i + 1}을 지울까요?`, body: `<p><b>${esc([s.teamName, s.nickname].filter(filled).join(' · ') || '이름 없는 모둠')}</b>의 기록이 사라지고 되돌릴 수 없어요. 필요하면 먼저 이어하기 → 8단계에서 활동 파일을 저장하세요.</p>`,
+      buttons: [{ label: '취소', value: 'cancel', kind: 'primary', auto: true }, { label: '지우기', value: 'ok', kind: 'danger' }] });
+    if (r !== 'ok') return;
+    store.slots[i] = null; if (store.active === i) { store.active = null; P = null; }
+    flushSave(); render(); toast(`저장 칸 ${i + 1}을 비웠어요.`);
+  },
+  importFile() { importFlow(); },
+  goto(el) { go(+el.dataset.n); },
+  async next() {
+    const n = P.currentStep; const miss = REQ[n](P);
+    if (miss.length && n < 8) {
+      const r = await ask({ title: '아직 채우지 않은 칸이 있어요', body: `<p>다음 단계로 가기 전에 이것을 해 보면 좋아요.</p><ul>${miss.map(m => `<li>${esc(m)}</li>`).join('')}</ul><p class="fine">지금 넘어가도 기록은 저장돼요. 나중에 돌아와서 채울 수 있어요.</p>`,
+        buttons: [{ label: '그래도 다음으로', value: 'go' }, { label: '채우러 가기', value: 'cancel', kind: 'primary', auto: true }] });
+      if (r !== 'go') return;
+    }
+    go(n + 1);
+  },
+  prev() { if (P.currentStep === 1) ACT.home(); else go(P.currentStep - 1); },
+  async pickPlace(el) {
+    const id = el.dataset.id; if (id === P.locationId) return;
+    if (P.locationId && hasProblemData(P)) {
+      const r = await ask({ title: '장소를 바꿀까요?', body: `<p>이미 <b>${esc(PLACE[P.locationId].name)}</b>에서 찾은 문제와 분석 기록이 있어요. 장소를 <b>${esc(PLACE[id].name)}</b>(으)로 바꾸면 그 기록이 새 장소와 맞지 않을 수 있어요.</p>`,
+        buttons: [{ label: '취소', value: 'cancel', auto: true }, { label: '기록은 그대로 두고 장소만 바꾸기', value: 'keep' }, { label: '문제부터 다시 쓰기', value: 'reset', kind: 'primary' }] });
+      if (r === 'cancel') return;
+      if (r === 'reset') clearProblem(P, true);
+      else if (P.selectedScenarioId && P.selectedScenarioId !== 'custom') P.selectedScenarioId = 'custom';
+    }
+    P.locationId = id; touch(); render();
+    if (el.dataset.src !== 'list' && window.matchMedia('(max-width:1199px)').matches) { const c = $('.place-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  },
+  async pickScenario(el) {
+    const id = el.dataset.id; if (id === P.selectedScenarioId) return;
+    const hasAnalysis = P.targetUsers.length || P.rootCauses.length || P.neededFunctions.length;
+    if (P.selectedScenarioId && hasAnalysis) {
+      const r = await ask({ title: '문제를 바꿀까요?', body: '<p>3단계에서 쓴 원인과 사용자 분석이 있어요. 문제를 바꾸면 그 내용이 새 문제와 맞지 않을 수 있어요.</p>',
+        buttons: [{ label: '취소', value: 'cancel', auto: true }, { label: '분석 기록 유지', value: 'keep' }, { label: '분석 다시 쓰기', value: 'reset', kind: 'primary' }] });
+      if (r === 'cancel') return;
+      if (r === 'reset') clearProblem(P, false);
+    }
+    const ownText = filled(P.problemDescription) && !ALL_SCENARIO_TEXTS.includes(P.problemDescription.trim());
+    if (id === 'custom') {
+      if (!ownText) P.problemDescription = '';
+    } else if (!ownText) {
+      P.problemDescription = scenarioText(id);
+    } else {
+      const r = await ask({ title: '내가 쓴 문제를 바꿀까요?', body: `<p>지금 쓴 문제: “${esc(P.problemDescription)}”</p><p>카드의 문장으로 바꿀까요, 내가 쓴 글을 그대로 둘까요?</p>`,
+        buttons: [{ label: '내가 쓴 글 그대로 두기', value: 'keep' }, { label: '카드 문장으로 바꾸기', value: 'swap', kind: 'primary' }] });
+      if (r === 'swap') P.problemDescription = scenarioText(id);
+    }
+    P.selectedScenarioId = id; touch(); render();
+    if (id === 'custom') { const t = $('#f-problem'); if (t) t.focus(); }
+  },
+  setType(el) { P.problemType = P.problemType === el.dataset.v ? '' : el.dataset.v; touch(); render(); },
+  toggleUser(el) { const v = el.dataset.v; const a = P.targetUsers; const i = a.indexOf(v); if (i >= 0) a.splice(i, 1); else a.push(v); touch(); render(); },
+  toggleConstraint(el) { const v = el.dataset.v; const a = P.designConstraints; const i = a.indexOf(v); if (i >= 0) a.splice(i, 1); else a.push(v); touch(); render(); },
+  toggleMaterial(el) { const v = el.dataset.v; const a = P.materials; const i = a.indexOf(v); if (i >= 0) a.splice(i, 1); else a.push(v); touch(); render(); },
+  addItem(el) {
+    const key = el.dataset.key; if (!LIST_KEYS.includes(key)) return;
+    const input = $('#add-' + key); if (!input) return;
+    const v = input.value.trim();
+    if (!v) { input.focus(); toast('칸에 내용을 먼저 써 주세요.'); return; }
+    if (!P[key].includes(v)) P[key].push(v.slice(0, 200));
+    input.value = ''; touch(); render(); const again = $('#add-' + key); if (again) again.focus();
+  },
+  removeItem(el) {
+    const key = el.dataset.key; if (!LIST_KEYS.includes(key)) return;
+    P[key].splice(+el.dataset.i, 1); if (key === 'usageSteps' && !P.usageSteps.length) P.usageSteps.push('');
+    touch(); render();
+  },
+  addStep() { P.usageSteps.push(''); touch(); render(); const ins = document.querySelectorAll('input[data-f="usageSteps"]'); if (ins.length) ins[ins.length - 1].focus(); },
+  rebuildStatement() { P.problemStatementEdited = false; P.problemStatement = buildStatement(P); touch(); render(); },
+  addIdea(el) {
+    const m = el.dataset.m; const t = (drafts[m + '-t'] || '').trim(); const d = (drafts[m + '-d'] || '').trim();
+    if (!t) { const inp = $(`#d-${m}-t`); if (inp) inp.focus(); toast('어떤 발명품을 만들 수 있을지 먼저 써 주세요.'); return; }
+    P.ideas.push({ id: uid(), method: m, title: t, description: d, evaluation: {} });
+    drafts[m + '-t'] = ''; drafts[m + '-d'] = ''; touch(); render();
+    toast(`'${t}' 아이디어 카드를 만들었어요.`);
+  },
+  async deleteIdea(el) {
+    const it = P.ideas.find(x => x.id === el.dataset.id); if (!it) return;
+    const r = await ask({ title: '아이디어 카드를 지울까요?', body: `<p>“${esc(it.title || '이름 없는 아이디어')}” 카드가 사라져요.</p>`, buttons: [{ label: '취소', value: 'cancel', kind: 'primary', auto: true }, { label: '지우기', value: 'ok', kind: 'danger' }] });
+    if (r !== 'ok') return;
+    P.ideas = P.ideas.filter(x => x.id !== it.id); if (P.selectedIdeaId === it.id) P.selectedIdeaId = null; touch(); render();
+  },
+  rateIdea(el) {
+    const it = P.ideas.find(x => x.id === el.dataset.id); if (!it) return;
+    it.evaluation = it.evaluation || {}; const k = el.dataset.k;
+    it.evaluation[k] = it.evaluation[k] === el.dataset.v ? undefined : el.dataset.v; touch(); render();
+  },
+  selectIdea(el) {
+    const it = P.ideas.find(x => x.id === el.dataset.id); if (!it) return;
+    P.selectedIdeaId = it.id; if (!filled(P.inventionName)) P.inventionName = it.title; touch(); render();
+  },
+  async previewFirst() { flushSave(); await ask({ title: '1~2차시 발명 제안서 미리 보기', body: reportHTML(P, 'first'), wide: true, buttons: [{ label: '닫기', value: 'ok', kind: 'primary' }] }); },
+  async continueLater() {
+    flushSave();
+    const r = await ask({ title: '이 기기에 활동이 저장되었어요', body: `<p>다음 시간에는 <b>같은 기기, 같은 브라우저</b>로 이 앱을 열고 <b>'저장한 활동 이어하기'</b>를 누르세요. 6단계 '발명품 설계와 제작 기록'부터 이어서 하면 돼요.</p>
+      <p>다른 기기에서 이어 하려면 아래 버튼으로 활동 ${EMBEDDED ? '기록을 복사해' : '파일을 저장해'} 두세요.</p>
+      <p><button type="button" class="btn" data-act="download">${EMBEDDED ? '활동 기록 복사하기' : '활동 파일 저장하기(JSON)'}</button></p>`,
+      buttons: [{ label: '6단계 미리 보기', value: 'six' }, { label: '처음 화면으로', value: 'home', kind: 'primary', auto: true }] });
+    if (r === 'home') ACT.home(); else if (r === 'six') go(6);
+  },
+  download() { exportFlow(); },
+  copyExport() {
+    const ta = $('#export-text'); if (!ta) return;
+    const done = () => toast('활동 기록을 복사했어요. 메모장 등에 붙여 넣어 보관하세요.');
+    const fallback = () => { ta.focus(); ta.select(); toast('글이 선택되었어요. Ctrl+C(또는 길게 눌러 복사)로 복사하세요.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback); else fallback();
+  },
+  setTool(el) { SK.tool = el.dataset.v; repaintToolbar(); },
+  setSize(el) { SK.size = +el.dataset.v; repaintToolbar(); },
+  setColor(el) { SK.color = el.dataset.v; SK.tool = 'pen'; repaintToolbar(); },
+  undo() {
+    const c = $('#sketch'); if (!c || !SK.undo.length) return;
+    c.getContext('2d').putImageData(SK.undo.pop(), 0, 0); commitCanvas();
+  },
+  async clearCanvas() {
+    const c = $('#sketch'); if (!c) return;
+    const r = await ask({ title: '그림을 모두 지울까요?', body: '<p>설계도 그림이 모두 지워져요. 지운 뒤 바로 \'되돌리기\'를 누르면 다시 살릴 수 있어요.</p>', buttons: [{ label: '취소', value: 'cancel', kind: 'primary', auto: true }, { label: '모두 지우기', value: 'ok', kind: 'danger' }] });
+    if (r !== 'ok') return;
+    const ctx = c.getContext('2d'); SK.undo.push(ctx.getImageData(0, 0, c.width, c.height));
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); commitCanvas();
+  },
+  setTestStatus(el) { P.testStatus = el.dataset.v; touch(); render(); },
+  setOutcome(el) { const r = P.testResults[+el.dataset.i]; r.outcome = r.outcome === el.dataset.v ? 'not_tested' : el.dataset.v; touch(); render(); },
+  print() { flushSave(); window.print(); },
+  async editAgain() {
+    const r = await ask({ title: '어느 단계를 고칠까요?', body: '<p>고친 내용은 보고서에 바로 반영돼요.</p>', buttons: [1, 2, 3, 4, 5, 6, 7].map(n => ({ label: `${n}. ${STEPS[n].title}`, value: String(n) })).concat([{ label: '취소', value: 'cancel', kind: 'primary' }]) });
+    if (r !== 'cancel') go(+r);
+  },
+  newInvention() { flushSave(); view = 'start'; render({ stepChanged: true }); toast('지금 발명은 저장되어 있어요. 빈 저장 칸에서 새 발명을 시작하세요.'); },
+  present() {
+    document.body.classList.add('presenting');
+    const b = document.createElement('button'); b.className = 'btn primary exit-present no-print'; b.textContent = '발표 화면 닫기'; b.dataset.act = 'exitPresent';
+    app.appendChild(b); window.scrollTo(0, 0);
+    try { const r = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (r && r.catch) r.catch(() => {}); } catch (e) { /* 전체 화면을 못 쓰면 그대로 둡니다 */ }
+  },
+  exitPresent() {
+    document.body.classList.remove('presenting'); const b = $('.exit-present'); if (b) b.remove();
+    try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { /* 무시 */ }
+  },
+};
+function repaintToolbar() {
+  document.querySelectorAll('[data-act="setTool"]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === SK.tool));
+  document.querySelectorAll('[data-act="setSize"]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === SK.size));
+  document.querySelectorAll('[data-act="setColor"]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === SK.color && SK.tool === 'pen'));
+}
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('presenting')) ACT.exitPresent(); });
+
+/* ---------- 활동 파일 내보내기 / 불러오기 ---------- */
+function exportFlow() {
+  flushSave();
+  const text = JSON.stringify({ app: APP_ID, version: 1, exportedAt: new Date().toISOString(), project: P }, null, 1);
+  const fname = `우리동네발명지도_발명제안서_${today()}.json`;
+  if (EMBEDDED) {
+    ask({ title: '활동 기록 복사하기', wide: true, body: `<p>미리 보기 창에서는 파일을 내려받을 수 없어요. 아래 글을 복사해 메모장에 붙여 넣고 <b>${esc(fname)}</b> 이름으로 저장하면 활동 파일이 돼요.</p>
+      <textarea id="export-text" rows="8" readonly aria-label="활동 기록">${esc(text)}</textarea><p><button type="button" class="btn primary" data-act="copyExport">복사하기</button></p>`,
+      buttons: [{ label: '닫기', value: 'ok' }] });
+    return;
+  }
+  try {
+    const blob = new Blob([text], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast(`'${fname}' 파일을 저장했어요. 다운로드 폴더를 확인하세요.`);
+  } catch (e) { toast('파일을 저장하지 못했어요. 다른 브라우저에서 다시 해 보세요.'); }
+}
+async function importFlow() {
+  const firstEmpty = store.slots.findIndex(s => !s);
+  const def = firstEmpty >= 0 ? firstEmpty : 0;
+  const r = await ask({ title: '활동 파일 불러오기', wide: true, body: `<p>전에 저장한 활동 파일(.json)을 고르세요. 파일 대신 복사해 둔 기록을 붙여 넣어도 돼요.</p>
+    <div class="field"><label for="imp-file">활동 파일</label><input type="file" id="imp-file" accept=".json,application/json"></div>
+    <div class="field"><label for="imp-text">또는 기록 붙여 넣기</label><textarea id="imp-text" rows="4"></textarea></div>
+    <fieldset style="border:0;padding:0;margin:0"><legend class="label">불러올 저장 칸</legend><div class="chips">${store.slots.map((s, i) => `<label class="chip" style="margin:0"><input type="radio" name="imp-slot" value="${i}" ${i === def ? 'checked' : ''}> ${i + 1}번 칸 ${s ? '(기록 있음)' : '(비어 있음)'}</label>`).join('')}</div></fieldset>`,
+    buttons: [{ label: '취소', value: 'cancel' }, { label: '불러오기', value: 'import', kind: 'primary' }] });
+  if (r !== 'import') return;
+  const file = $('#imp-file').files[0]; const pasted = $('#imp-text').value.trim();
+  const slot = +((document.querySelector('input[name="imp-slot"]:checked') || {}).value || def);
+  let text = pasted;
+  if (file) {
+    if (file.size > 6 * 1024 * 1024) return badFile('파일이 너무 커요.');
+    try { text = await file.text(); } catch (e) { return badFile('파일을 읽지 못했어요.'); }
+  }
+  if (!text) return badFile('파일을 고르거나 기록을 붙여 넣어 주세요.');
+  let proj;
+  try {
+    const data = JSON.parse(text);
+    const raw = data && data.app === APP_ID ? data.project : data;
+    if (data && data.app && data.app !== APP_ID) throw new Error('다른 앱');
+    proj = normalizeProject(raw);
+  } catch (e) { return badFile('이 파일은 우리 동네 발명 지도의 활동 파일이 아니거나 내용이 망가졌어요.'); }
+  if (!(await confirmOverwrite(slot))) return;
+  store.slots[slot] = proj; openProject(slot);
+  toast(`활동을 불러왔어요. 저장 칸 ${slot + 1}에서 이어서 해요.`);
+}
+function badFile(msg) { ask({ title: '불러오지 못했어요', body: `<p>${esc(msg)}</p><p class="fine">'활동 파일 저장하기'로 만든 .json 파일을 골라 주세요. 지금 저장된 기록은 그대로예요.</p>` }); }
+
+/* =====================================================================
+   입력 이벤트 (자동 저장)
+   ===================================================================== */
+function refreshSide() { const s = $('#side'); if (s) s.innerHTML = renderSide(); }
+let reportTimer = null;
+function afterEdit(t) {
+  const n = P.currentStep;
+  if (n === 3 && t.dataset.f !== 'problemStatement' && !P.problemStatementEdited) {
+    P.problemStatement = buildStatement(P); const st = $('#f-statement'); if (st) st.value = P.problemStatement;
+  }
+  if (n === 7) { const c = $('#compare'); if (c) c.innerHTML = compareHTML(); }
+  if (n === 8) {
+    const h = $('#hero-name'); if (h) h.textContent = filled(P.inventionName) ? P.inventionName : '발명품 이름을 정해 주세요';
+    clearTimeout(reportTimer); reportTimer = setTimeout(() => { const r = $('#report'); if (r) r.innerHTML = reportHTML(P, 'all'); }, 200);
+  }
+  refreshSide();
+}
+function setFromInput(t) {
+  const f = t.dataset.f; const v = t.value;
+  if (t.dataset.idea) { const it = P.ideas.find(x => x.id === t.dataset.idea); if (it && ['title', 'description', 'method'].includes(f)) it[f] = f === 'method' && !METHODS[v] ? 'free' : v; }
+  else if (t.dataset.tr != null) { const r = P.testResults[+t.dataset.tr]; if (r && f === 'note') r.note = v; }
+  else if (t.dataset.i != null) { if (Array.isArray(P[f])) P[f][+t.dataset.i] = v; }
+  else if (typeof P[f] === 'string') { P[f] = v; if (f === 'problemStatement') { P.problemStatementEdited = true; const b = $('[data-act="rebuildStatement"]'); if (b) b.textContent = '위 내용으로 문장 다시 만들기'; } }
+  touch();
+}
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset && t.dataset.draft != null) { drafts[t.dataset.draft] = t.value; return; }
+  if (!P || view !== 'app' || !t.dataset || !t.dataset.f) return;
+  setFromInput(t); afterEdit(t);
+});
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.tagName === 'SELECT' && t.dataset.f && P) { setFromInput(t); afterEdit(t); }
+});
+document.addEventListener('keydown', (e) => {
+  const t = e.target;
+  if (e.key === 'Enter' && !e.isComposing && t.dataset && t.dataset.enter && ACT[t.dataset.enter]) { e.preventDefault(); ACT[t.dataset.enter](t); }
+  if (e.key === 'Escape' && document.body.classList.contains('presenting')) ACT.exitPresent();
+});
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = ACT[el.dataset.act]; if (!fn) return;
+  e.preventDefault(); fn(el, e);
+});
+
+/* ---------- 시작 ---------- */
+if (!storageOK) saveState.state = 'error';
+render();
+if (!storageOK) toast('이 브라우저에서는 자동 저장을 쓸 수 없어요. 8단계에서 활동 파일로 저장하세요.');
+})();
+</script>
+
+</html>
